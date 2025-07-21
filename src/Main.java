@@ -25,12 +25,13 @@ public class Main {
         //try to understand more
         GL.createCapabilities();//initializes LWJGL's OpenGL bindings for the current context / allows for communication to GPU and for java to use OpenGL
 
-        while (!glfwWindowShouldClose(window)) { //keeps the window open
+        while (!glfwWindowShouldClose(window)) { //keeps the window open / rendering loop
 
             glfwPollEvents(); //checks for events for player input for example
 
             if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GL_TRUE) {
                 glfwDestroyWindow(window);
+                break;
             };
 
             glClear(GL_COLOR_BUFFER_BIT);//Clears the screen (erases whatever you drew last frame)
