@@ -25,6 +25,32 @@ public class Main {
         //try to understand more
         GL.createCapabilities();//initializes LWJGL's OpenGL bindings for the current context / allows for communication to GPU and for java to use OpenGL
 
+        glEnable(GL_TEXTURE_2D);
+
+        float[] vertices = new float[] {
+                -0.5f, 0.5f, 0, //top left
+                0.5f, 0.5f, 0, //top right
+                0.5f, -0.5f, 0, //bottom right
+
+                0.5f, -0.5f, 0, //bottom right
+                -0.5f, -0.5f, 0, //bottom left
+                -0.5f, 0.5f, 0, //top left
+        };
+
+        float[] texture = new float[]{
+                0,0,
+                1,0,
+                1,1,
+
+                1,1,
+                0,1,
+                0,0,
+        };
+
+        Model model = new Model(vertices, texture);
+
+        Texture tex = new Texture("res/smile.png");
+
         while (!glfwWindowShouldClose(window)) { //keeps the window open / rendering loop
 
             glfwPollEvents(); //checks for events for player input for example
@@ -36,18 +62,22 @@ public class Main {
 
             glClear(GL_COLOR_BUFFER_BIT);//Clears the screen (erases whatever you drew last frame)
 
-            glBegin(GL_QUADS);
-                glColor4f(1,0,0,0);
-                glVertex2f(-0.5f,0.5f);
+            tex.bind();
 
-                glColor4f(0,1,0,0);
-                glVertex2f(0.5f,0.5f);
+            model.render();
 
-                glColor4f(0,0,1,0);
-                glVertex2f(0.5f,-0.5f);
-
-                glColor4f(1,1,1,0);
-                glVertex2f(-0.5f,-0.5f);
+//            glBegin(GL_QUADS);
+//                glTexCoord2f(1,1);
+//                glVertex2f(-0.5f,0.5f);
+//
+//                glTexCoord2f(0,1);
+//                glVertex2f(0.5f,0.5f);
+//
+//                glTexCoord2f(0,0);
+//                glVertex2f(0.5f,-0.5f);
+//
+//                glTexCoord2f(1,0);
+//                glVertex2f(-0.5f,-0.5f);
 
             glEnd();
 
