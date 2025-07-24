@@ -28,26 +28,25 @@ public class Main {
         glEnable(GL_TEXTURE_2D);
 
         float[] vertices = new float[] {
-                -0.5f, 0.5f, 0, //top left
-                0.5f, 0.5f, 0, //top right
-                0.5f, -0.5f, 0, //bottom right
-
-                0.5f, -0.5f, 0, //bottom right
-                -0.5f, -0.5f, 0, //bottom left
-                -0.5f, 0.5f, 0, //top left
+                -0.5f, 0.5f, 0, //top left      0
+                0.5f, 0.5f, 0, //top right      1
+                0.5f, -0.5f, 0, //bottom right  2
+                -0.5f, -0.5f, 0, //top left      3
         };
 
         float[] texture = new float[]{
                 0,0,
                 1,0,
                 1,1,
-
-                1,1,
                 0,1,
-                0,0,
         };
 
-        Model model = new Model(vertices, texture);
+        int [] indices = new int[]{
+                0,1,2,
+                2,3,0
+        };
+
+        Model model = new Model(vertices, texture, indices);
 
         Texture tex = new Texture("res/smile.png");
 
@@ -78,8 +77,6 @@ public class Main {
 //
 //                glTexCoord2f(1,0);
 //                glVertex2f(-0.5f,-0.5f);
-
-            glEnd();
 
             glfwSwapBuffers(window);//allows the drawings to be seen on screen. ???
         }
