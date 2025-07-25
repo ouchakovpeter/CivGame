@@ -35,10 +35,10 @@ public class Main {
         };
 
         float[] texture = new float[]{
-                0,0,
-                1,0,
                 1,1,
                 0,1,
+                0,0,
+                1,0,
         };
 
         int [] indices = new int[]{
@@ -47,6 +47,8 @@ public class Main {
         };
 
         Model model = new Model(vertices, texture, indices);
+        Shader shader = new Shader("shader");
+
 
         Texture tex = new Texture("res/smile.png");
 
@@ -61,8 +63,10 @@ public class Main {
 
             glClear(GL_COLOR_BUFFER_BIT);//Clears the screen (erases whatever you drew last frame)
 
-            tex.bind();
 
+            shader.bind();
+            shader.setUniform("sampler", 0);
+            tex.bind(0);
             model.render();
 
 //            glBegin(GL_QUADS);
