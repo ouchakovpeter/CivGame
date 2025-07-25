@@ -13,6 +13,7 @@
       <root url="jar://$PROJECT_DIR$/library/lwjgl-stb.jar!/" />
       <root url="jar://$PROJECT_DIR$/library/lwjgl.jar!/" />
       <root url="jar://$PROJECT_DIR$/library/lwjgl-natives-windows.jar!/" />
+      <root url="jar://$PROJECT_DIR$/library/joml-1.10.8.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>
@@ -21,6 +22,8 @@
       <root url="jar://$PROJECT_DIR$/library/lwjgl-openal-sources.jar!/" />
       <root url="jar://$PROJECT_DIR$/library/lwjgl-opengl-sources.jar!/" />
       <root url="jar://$PROJECT_DIR$/library/lwjgl-stb-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/library/joml-1.10.8-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/library/joml-1.10.8-sources.jar!/" />
     </SOURCES>
   </library>
 </component>

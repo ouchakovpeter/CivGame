@@ -2,6 +2,8 @@
 
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
+
+import org.joml.Matrix4f;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 public class Main {
@@ -52,6 +54,12 @@ public class Main {
 
         Texture tex = new Texture("res/smile.png");
 
+        Matrix4f projection = new Matrix4f().ortho2D(-640/2, 640/2, -480/2, 480/2);
+        Matrix4f scale = new Matrix4f().scale(64);
+        Matrix4f target = new Matrix4f();
+
+        projection.mul(scale, target);
+
         while (!glfwWindowShouldClose(window)) { //keeps the window open / rendering loop
 
             glfwPollEvents(); //checks for events for player input for example
@@ -66,6 +74,7 @@ public class Main {
 
             shader.bind();
             shader.setUniform("sampler", 0);
+            shader.setUniform("projection", target);
             tex.bind(0);
             model.render();
 
