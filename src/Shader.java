@@ -8,22 +8,27 @@ import java.io.IOException;
 import java.nio.FloatBuffer;
 
 import static  org.lwjgl.opengl.GL20.*;
+
+//this class is important as it allows the graphics to be computed by the gpu. it tells the graphics card where to place vertices (vertex shader), how to color pixels (fragment shader)
 public class Shader {
-    private int program;
-    private int vs;
-    private int fs;
+    private int program; //vertex + fragment shader
+    private int vs; //vertex shader
+    private int fs; //fragment shader
 
     public Shader (String filename) {
-        program = glCreateProgram();
+        program = glCreateProgram(); //Creates an empty "container" (program) to hold shaders
 
-        vs = glCreateShader(GL_VERTEX_SHADER);
-        glShaderSource(vs, readFile(filename + ".vs"));
-        glCompileShader(vs);
-        if (glGetShaderi(vs, GL_COMPILE_STATUS) != 1) {
+        //Load & Compile Vertex Shader
+        vs = glCreateShader(GL_VERTEX_SHADER); // Creates a vertex shader slot
+        //the GPU allocates a small space in its memory specifically for vertex shader instructions
+        glShaderSource(vs, readFile(filename + ".vs"));  //loads the shader source code from shader.vs
+        glCompileShader(vs); //compiles the code into GPU instructions
+        if (glGetShaderi(vs, GL_COMPILE_STATUS) != 1) { //If compilation fails, prints error
             System.err.println(glGetShaderInfoLog(vs));
             System.exit(1);
         }
 
+        //same as the vertex shader but for colors instead of vertices
         fs = glCreateShader(GL_FRAGMENT_SHADER);
         glShaderSource(fs, readFile(filename + ".fs"));
         glCompileShader(fs);
@@ -32,18 +37,22 @@ public class Shader {
             System.exit(1);
         }
 
+        //combines both shaders into the program, now the gpu knows where to put vertices, and how to color them.
         glAttachShader(program, vs);
         glAttachShader(program, fs);
 
+        //Link Attributes (Vertex Data)
+        //this tells openGL attribute 0 is vertex position, and attribute 1 is textures.
+        //Matches the Model class's vertex data
         glBindAttribLocation(program, 0, "vertices");
         glBindAttribLocation(program, 1, "textures");
 
-        glLinkProgram(program);
+        glLinkProgram(program); //combines shaders into a final GPU-ready program
         if (glGetProgrami(program, GL_LINK_STATUS) != 1) {
             System.err.println(glGetProgramInfoLog(program));
             System.exit(1);
         }
-        glValidateProgram(program);
+        glValidateProgram(program); //checks for compatibility errors,
         if (glGetProgrami(program, GL_VALIDATE_STATUS) != 1) {
             System.err.println(glGetProgramInfoLog(program));
             System.exit(1);
@@ -65,10 +74,12 @@ public class Shader {
         }
     }
 
+    //Tells OpenGL: "Use this shader for all upcoming drawings."
     public void bind(){
         glUseProgram(program);
     }
 
+    //Reads shader.vs or shader.fs from the shaders folder. we use this code above.
     private String readFile(String filename) {
         StringBuilder string = new StringBuilder();
         BufferedReader br;
@@ -82,7 +93,7 @@ public class Shader {
             }
             br.close();
         }
-        catch(IOException e) {
+        catch(IOException e) { //If the file is missing, print an error
             e.printStackTrace();
         }
         return string.toString();
