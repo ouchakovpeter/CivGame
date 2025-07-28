@@ -27,6 +27,8 @@ public class Input {
         return(!isKeyDown(key) && keys[key]);
     }
 
+    //glfwGetCursorPos()
+
     public boolean isMouseButtonDown(int button){
         return glfwGetMouseButton(window, button) == 1;
     }

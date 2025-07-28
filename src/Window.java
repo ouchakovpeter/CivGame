@@ -17,8 +17,6 @@ public class Window {
                 throw new IllegalStateException(GLFWErrorCallback.getDescription(description));
             }
         });
-
-
     }
     public Window(){
         setSize(640,480);
@@ -36,7 +34,6 @@ public class Window {
         if  (window == 0) {
             throw new IllegalStateException("Failed to Create Window"); //error exception if window doesn't get created
         }
-
 
         if(!fullscreen) {
             GLFWVidMode videoMode = glfwGetVideoMode(glfwGetPrimaryMonitor()); //finds the monitors size
