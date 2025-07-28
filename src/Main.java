@@ -22,6 +22,8 @@ public class Main {
         // Loads OpenGL functions for Java to use.
 
         Camera camera = new Camera(win.getWidth(), win.getHeight());
+        GameController controller = new GameController(win, camera);
+
         glEnable(GL_TEXTURE_2D);
         //Enables 2D textures
 
@@ -81,19 +83,7 @@ public class Main {
                     target = scale;
 
                     win.update(); //checks for events for player input for example
-
-                    if(win.getInput().isKeyPressed(GLFW_KEY_ESCAPE)) { //checks for player input.
-                        glfwSetWindowShouldClose(win.getWindow(),true);
-                        break;
-                    };
-
-                    if (win.getInput().isMousePressed(GLFW_MOUSE_BUTTON_LEFT)) {
-                        System.out.println("Left mouse button was just pressed!");
-                    }
-
-                    if (win.getInput().isMouseReleased(GLFW_MOUSE_BUTTON_LEFT)) {
-                        System.out.println("Left mouse button was just released!");
-                    }
+                    controller.update();
 
                     //frame rate counter
                     if(frame_time >= 1.0){
