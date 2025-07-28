@@ -15,21 +15,15 @@ public class Main {
             throw new IllegalStateException("Failed to Initialize GLFW"); //error exception if GLFW doesn't load
         }
 
-        long window = glfwCreateWindow(640, 480, "Window",0, 0);
-        if  (window == 0) {
-            throw new IllegalStateException("Failed to Create Window"); //error exception if window doesn't get created
-        }
-
-        GLFWVidMode videoMode = glfwGetVideoMode(glfwGetPrimaryMonitor()); //finds the monitors size
-        glfwSetWindowPos(window, (videoMode.width() - 640) / 2, (videoMode.height() - 480)/2); //puts the window in the center of the screen
-
-        glfwMakeContextCurrent(window);//tells openGL to draw in this specific window
+        Window win = new Window();
+        win.setFullscreen(false);
+        win.createWindow("CivGame");
 
         //try to understand more
         GL.createCapabilities();//initializes LWJGL's OpenGL bindings for the current context / allows for communication to GPU and for java to use OpenGL /
         // Loads OpenGL functions for Java to use.
 
-        Camera camera = new Camera(640, 480);
+        Camera camera = new Camera(win.getWidth(), win.getHeight());
         glEnable(GL_TEXTURE_2D);
         //Enables 2D textures
 
@@ -64,31 +58,59 @@ public class Main {
         Matrix4f scale = new Matrix4f().scale(64);
         Matrix4f target = new Matrix4f();
 
-        while (!glfwWindowShouldClose(window)) { //keeps the window open / rendering loop
+        double frame_cap = 1.0/120.0;
 
-            target = scale;
+        double frame_time = 0;
+        int frames = 0;
 
-            glfwPollEvents(); //checks for events for player input for example
+        double time = Timer.getTime();
+        double unprocessed = 0;
 
-            if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GL_TRUE) { //checks for player input.
-                glfwDestroyWindow(window);
-                break;
-            };
+        while (!win.shouldClose()) { //keeps the window open / rendering loop
+            boolean can_render = false;
 
-            glClear(GL_COLOR_BUFFER_BIT);//Clears the screen (erases whatever you drew last frame)
+            double time_2 = Timer.getTime();
+            double passed = time_2 - time;
+            unprocessed += passed; //fixes unprocessed time;
 
-            //binding = Selecting a texture for OpenGL to use, so we must bind so that
-            //already compiled shaders.
-            shader.bind(); // activates the shader // runs a calculation by the gpu
-            shader.setUniform("sampler", 0); // Look in slot 0 for the texture
-            shader.setUniform("projection", camera.getProjection().mul(target));
-            tex.bind(0);// Put the texture in slot 0
-            model.render(); //draws the square
+            frame_time += passed;
 
-            glfwSwapBuffers(window);//allows the drawings to be seen on screen. ???
-            //swaps the front/back buffers, The new frame becomes visible, The old frame becomes the new back buffer.
-            //a buffer is just a temporary storage area
-            //OpenGL uses two buffers, this way opengl can draw the entire frame in secret then instantly swap it to the front when done
+            time = time_2;
+
+                while (unprocessed >= frame_cap){
+                    unprocessed -= frame_cap;
+                    can_render = true;
+                    target = scale;
+
+                    win.update(); //checks for events for player input for example
+
+                    if(win.getInput().isKeyPressed(GLFW_KEY_ESCAPE)) { //checks for player input.
+                        glfwSetWindowShouldClose(win.getWindow(),true);
+                        break;
+                    };
+
+                    //frame rate counter
+                    if(frame_time >= 1.0){
+                        frame_time = 0;
+                        System.out.println("FPS:" + frames);
+                        frames = 0;
+                    }
+                }
+
+                if(can_render){
+                    glClear(GL_COLOR_BUFFER_BIT);//Clears the screen (erases whatever you drew last frame)
+
+                    //binding = Selecting a texture for OpenGL to use, so we must bind so that
+                    //already compiled shaders.
+                    shader.bind(); // activates the shader // runs a calculation by the gpu
+                    shader.setUniform("sampler", 0); // Look in slot 0 for the texture
+                    shader.setUniform("projection", camera.getProjection().mul(target));
+                    tex.bind(0);// Put the texture in slot 0
+                    model.render(); //draws the square
+
+                    win.swapBuffers();
+                    frames++;
+                }
         }
 
         glfwTerminate();
