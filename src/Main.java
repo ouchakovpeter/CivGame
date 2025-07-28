@@ -1,5 +1,3 @@
-
-
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 
@@ -88,6 +86,14 @@ public class Main {
                         glfwSetWindowShouldClose(win.getWindow(),true);
                         break;
                     };
+
+                    if (win.getInput().isMousePressed(GLFW_MOUSE_BUTTON_LEFT)) {
+                        System.out.println("Left mouse button was just pressed!");
+                    }
+
+                    if (win.getInput().isMouseReleased(GLFW_MOUSE_BUTTON_LEFT)) {
+                        System.out.println("Left mouse button was just released!");
+                    }
 
                     //frame rate counter
                     if(frame_time >= 1.0){

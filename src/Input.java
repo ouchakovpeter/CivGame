@@ -3,11 +3,16 @@ public class Input {
 
     private long window;
     private boolean keys[];
+    private boolean mouse[];
     public Input(long window){
         this.window = window;
         this.keys = new boolean[GLFW_KEY_LAST];
         for(int i = 0; i < GLFW_KEY_LAST; i++){
             keys[i] = false;
+        }
+        this.mouse = new boolean[GLFW_MOUSE_BUTTON_LAST];
+        for(int i = 0; i < GLFW_MOUSE_BUTTON_LAST; i++){
+            mouse[i] = false;
         }
     }
 
@@ -26,9 +31,20 @@ public class Input {
         return glfwGetMouseButton(window, button) == 1;
     }
 
+    public boolean isMousePressed(int button) {
+        return(isMouseButtonDown(button) && !mouse[button]);
+    }
+
+    public boolean isMouseReleased(int button) {
+        return(!isMouseButtonDown(button) && mouse[button]);
+    }
+
     public void update (){
         for(int i = 0; i < GLFW_KEY_LAST; i++){
             keys[i] = isKeyDown(i);
+        }
+        for(int i = 0; i < GLFW_MOUSE_BUTTON_LAST; i++){
+            mouse[i] = isMouseButtonDown(i);
         }
     }
 }

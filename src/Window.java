@@ -8,7 +8,6 @@ public class Window {
 
     private int width, height;
     private boolean fullscreen;
-
     private Input input;
 
     public static void setCallbacks(){
