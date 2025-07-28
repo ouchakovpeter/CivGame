@@ -70,4 +70,7 @@ public class Input {
     public double getDeltaX() { return deltaX; }
     public double getDeltaY() { return deltaY; }
 
+    public void setDeltaX(double newDeltaX) { this.deltaX = newDeltaX; }
+    public void setDeltaY(double newDeltaY) { this.deltaX = newDeltaY; }
+
 }

@@ -14,6 +14,7 @@ public class Main {
         }
 
         Window win = new Window();
+        win.setSize(1920,1080);
         win.setFullscreen(false);
         win.createWindow("CivGame");
 
