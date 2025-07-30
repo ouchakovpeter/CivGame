@@ -29,11 +29,6 @@ public class World {
         world.scale(scale);
     }
     public void render(TileRenderer render, Shader shader, Camera camera, Window window) {
-//        for (int i = 0; i < height; i++) {
-//            for (int j = 0; j < width; j++) {
-//                render.renderTile(tiles[j + i * width], j, -i, shader, world, camera);
-//            }
-//        }
 
         int posX = ((int)camera.getPosition().x + (window.getWidth()/2)) / (scale * 2);
         int posY = ((int)camera.getPosition().y - (window.getHeight()/2)) / (scale * 2);
