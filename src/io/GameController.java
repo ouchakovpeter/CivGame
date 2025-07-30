@@ -1,3 +1,7 @@
+package io;
+
+import render.Camera;
+
 import static org.lwjgl.glfw.GLFW.*;
 
 public class GameController {
@@ -25,7 +29,7 @@ public class GameController {
             camera.getPosition().sub(-dx, dy, 0);
         }
 
-        // WASD or arrow keys can go here too
+        // WASD or arrow keys can go here too // turn this into a switch
         if (input.isKeyDown(GLFW_KEY_W)) {
             camera.getPosition().add(0, 1, 0);
         }

@@ -1,3 +1,5 @@
+package render;
+
 import org.joml.Matrix4f;
 import org.lwjgl.BufferUtils;
 
@@ -18,7 +20,7 @@ public class Shader {
     public Shader (String filename) {
         program = glCreateProgram(); //Creates an empty "container" (program) to hold shaders
 
-        //Load & Compile Vertex Shader
+        //Load & Compile Vertex render.Shader
         vs = glCreateShader(GL_VERTEX_SHADER); // Creates a vertex shader slot
         //the GPU allocates a small space in its memory specifically for vertex shader instructions
         glShaderSource(vs, readFile(filename + ".vs"));  //loads the shader source code from shader.vs
@@ -43,7 +45,7 @@ public class Shader {
 
         //Link Attributes (Vertex Data)
         //this tells openGL attribute 0 is vertex position, and attribute 1 is textures.
-        //Matches the Model class's vertex data
+        //Matches the render.Model class's vertex data
         glBindAttribLocation(program, 0, "vertices");
         glBindAttribLocation(program, 1, "textures");
 

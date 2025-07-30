@@ -1,3 +1,5 @@
+package io;
+
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 
@@ -32,7 +34,7 @@ public class Window {
                 0);
 
         if  (window == 0) {
-            throw new IllegalStateException("Failed to Create Window"); //error exception if window doesn't get created
+            throw new IllegalStateException("Failed to Create io.Window"); //error exception if window doesn't get created
         }
 
         if(!fullscreen) {

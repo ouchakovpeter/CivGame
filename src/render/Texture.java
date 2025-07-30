@@ -1,7 +1,12 @@
+package render;
+
 import org.lwjgl.stb.STBImage;
 import org.lwjgl.system.MemoryStack;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
@@ -11,22 +16,24 @@ import static org.lwjgl.opengl.GL13.*;
 import static org.lwjgl.stb.STBImage.*;
 
 public class Texture {
-    private final int id;
-    private final int width;
-    private final int height;
+    private int id;
+    private int width;
+    private int height;
 
-    public Texture(String path) {
+    public Texture(String filename) {
         // Load image
         ByteBuffer image;
+
         try (MemoryStack stack = MemoryStack.stackPush()) {
             IntBuffer w = stack.mallocInt(1);
             IntBuffer h = stack.mallocInt(1);
+
             IntBuffer channels = stack.mallocInt(1);
 
             stbi_set_flip_vertically_on_load(true);
-            image = stbi_load(path, w, h, channels, 4);
+            image = stbi_load("texture/" + filename, w, h, channels, 4);
             if (image == null) {
-                throw new RuntimeException("Failed to load texture " + path + ": " + stbi_failure_reason());
+                throw new RuntimeException("Failed to load texture " + filename + ": " + stbi_failure_reason());
             }
 
             width = w.get();

@@ -1,10 +1,18 @@
+package game;
+
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
+
+import io.*;
+import render.*;
+import world.*;
 
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
+
+
 public class Main {
     public static void main(String[] args) {
 
@@ -14,7 +22,7 @@ public class Main {
         }
 
         Window win = new Window();
-        win.setSize(1920,1080);
+        win.setSize(1366,768);
         win.setFullscreen(false);
         win.createWindow("CivGame");
 
@@ -26,37 +34,40 @@ public class Main {
         GameController controller = new GameController(win, camera);
 
         glEnable(GL_TEXTURE_2D);
+
+        //should be part of a "world class"
+        TileRenderer tiles = new TileRenderer();
         //Enables 2D textures
 
-        //defining a quad / square by defining the 4 corners in 3d space. / -0.5 means the square is 1 unit tall in width and height centered at 0,0
-        float[] vertices = new float[] {
-                -0.5f, 0.5f, 0,  // top left      0
-                0.5f, 0.5f, 0,   // top right     1
-                0.5f, -0.5f, 0,  // bottom right  2
-                -0.5f, -0.5f, 0, // top left      3
-        };
-
-        //uv texture coordinates
-        float[] texture = new float[]{
-                1,1, // Top-left corner
-                0,1, // Top-right corner
-                0,0, // Bottom-right corner
-                1,0, // Bottom-left corner
-        };
-
-        //draws the triangles / splits the square into two triangles // these indicies refer to the order fo the vertices // indices save memory by reusing vertices
-        int [] indices = new int[]{
-                0,1,2, // First triangle (top-left, top-right, bottom-right)
-                2,3,0  // Second triangle (bottom-right, bottom-left, top-left)
-        };
-
-        //shaders are important to calculate where vertices are on screen/ vertex shader puts where vertices appear on the screen/ fragment shader colors each pixel
-        Model model = new Model(vertices, texture, indices); //stores the shape (vertices, texture coords, indices).
+//        //defining a quad / square by defining the 4 corners in 3d space. / -0.5 means the square is 1 unit tall in width and height centered at 0,0
+//        float[] vertices = new float[] {
+//                -0.5f, 0.5f, 0,  // top left      0
+//                0.5f, 0.5f, 0,   // top right     1
+//                0.5f, -0.5f, 0,  // bottom right  2
+//                -0.5f, -0.5f, 0, // top left      3
+//        };
+//
+//        //uv texture coordinates
+//        float[] texture = new float[]{
+//                1,1, // Top-left corner
+//                0,1, // Top-right corner
+//                0,0, // Bottom-right corner
+//                1,0, // Bottom-left corner
+//        };
+//
+//        //draws the triangles / splits the square into two triangles // these indicies refer to the order fo the vertices // indices save memory by reusing vertices
+//        int [] indices = new int[]{
+//                0,1,2, // First triangle (top-left, top-right, bottom-right)
+//                2,3,0  // Second triangle (bottom-right, bottom-left, top-left)
+//        };
+//
+//        //shaders are important to calculate where vertices are on screen/ vertex shader puts where vertices appear on the screen/ fragment shader colors each pixel
+//        Model model = new Model(vertices, texture, indices); //stores the shape (vertices, texture coords, indices).
         Shader shader = new Shader("shader"); // loads and compiles shader files (shader.vs and shader.fs).
-        Texture tex = new Texture("res/smile.png"); // loads an image (smile.png) from the res folder.
+        Texture tex = new Texture("smile.png"); // loads an image (smile.png) from the res folder.
 
         Matrix4f projection = new Matrix4f().ortho2D(-640/2, 640/2, -480/2, 480/2);
-        Matrix4f scale = new Matrix4f().scale(64);
+        Matrix4f scale = new Matrix4f().scale(32);
         Matrix4f target = new Matrix4f();
 
         double frame_cap = 1.0/120.0;
@@ -99,11 +110,16 @@ public class Main {
 
                     //binding = Selecting a texture for OpenGL to use, so we must bind so that
                     //already compiled shaders.
-                    shader.bind(); // activates the shader // runs a calculation by the gpu
-                    shader.setUniform("sampler", 0); // Look in slot 0 for the texture
-                    shader.setUniform("projection", camera.getProjection().mul(target));
-                    tex.bind(0);// Put the texture in slot 0
-                    model.render(); //draws the square
+//                    shader.bind(); // activates the shader // runs a calculation by the gpu
+//                    shader.setUniform("sampler", 0); // Look in slot 0 for the texture
+//                    shader.setUniform("projection", camera.getProjection().mul(target));
+//                    tex.bind(0);// Put the texture in slot 0
+//                    model.render(); //draws the square
+
+                    //put this into a world class
+                    for(int i = 0; i < 16; i++){
+                        for(int j = 0; j < 16; j++){
+                        tiles.renderTile((byte)0, i, j,shader,scale, camera);}}
 
                     win.swapBuffers();
                     frames++;
