@@ -22,7 +22,7 @@ public class Main {
         }
 
         Window win = new Window();
-        win.setSize(1366,768);
+        win.setSize(640, 480);
         win.setFullscreen(false);
         win.createWindow("CivGame");
 
@@ -84,7 +84,7 @@ public class Main {
                 if(can_render){
                     glClear(GL_COLOR_BUFFER_BIT);//Clears the screen (erases whatever you drew last frame)
 
-                    world.render(tiles, shader, camera);
+                    world.render(tiles, shader, camera, win);
 
                     win.swapBuffers();
                     frames++;
