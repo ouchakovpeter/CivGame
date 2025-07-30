@@ -8,6 +8,8 @@ public class GameController {
     private Camera camera;
     private Window window;
 
+    private int movementSpeed = 5;
+
     public GameController(Window window, Camera camera){
         this.window = window;
         this.camera = camera;
@@ -31,17 +33,19 @@ public class GameController {
 
         // WASD or arrow keys can go here too // turn this into a switch
         if (input.isKeyDown(GLFW_KEY_W)) {
-            camera.getPosition().add(0, 1, 0);
+            camera.getPosition().add(0, movementSpeed, 0);
         }
         if (input.isKeyDown(GLFW_KEY_S)) {
-            camera.getPosition().add(0, -1, 0);
+            camera.getPosition().add(0, -movementSpeed, 0);
         }
         if (input.isKeyDown(GLFW_KEY_D)) {
-            camera.getPosition().add(1, 0, 0);
+            camera.getPosition().add(movementSpeed, 0, 0);
         }
         if (input.isKeyDown(GLFW_KEY_A)) {
-            camera.getPosition().add(-1, 1, 0);
+            camera.getPosition().add(-movementSpeed, 0, 0);
         }
+
+//        rotation
 //        if (input.isKeyPressed(GLFW_KEY_E)) {
 //            camera.getPosition().mul((float)Math.toRadians(0), (float)Math.toRadians(90), (float)Math.toRadians(0));
 //        }
