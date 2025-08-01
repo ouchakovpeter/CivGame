@@ -18,10 +18,11 @@ public class World {
 
     private int scale;
 
-    public World(){
+
+    public World(int worldWidth, int worldHeight){
         width = 640;
         height = 480;
-        scale = 16;
+        scale = 16; //pixel size i think
 
         tiles = new byte[width * height];
 
@@ -30,8 +31,11 @@ public class World {
     }
     public void render(TileRenderer render, Shader shader, Camera camera, Window window) {
 
-        int posX = ((int)camera.getPosition().x + (window.getWidth()/2)) / (scale * 2);
-        int posY = ((int)camera.getPosition().y - (window.getHeight()/2)) / (scale * 2);
+        float zoom = camera.getZoom();
+        float effectiveScale = scale * zoom;
+
+        int posX = ((int)camera.getPosition().x + (window.getWidth()/2)) / (int)(effectiveScale * 2);
+        int posY = ((int)camera.getPosition().y - (window.getHeight()/2)) / (int)(effectiveScale * 2);
 
         for (int i = 0; i < view; i++) {
             for (int j = 0; j < view; j++) {
@@ -46,8 +50,11 @@ public class World {
     public void correctCamera(Camera camera, Window window){
         Vector3f pos = camera.getPosition();
 
-        int w = -width * scale * 2;
-        int h = height * scale * 2;
+        float zoom = camera.getZoom();
+        float effectiveScale = scale * zoom;
+
+        int w = -width * (int)effectiveScale * 2;
+        int h = height * (int)effectiveScale * 2;
 
         //right
         if(pos.x>-(window.getWidth()/2)+scale){

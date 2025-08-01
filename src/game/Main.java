@@ -22,9 +22,13 @@ public class Main {
         }
 
         Window win = new Window();
-        win.setSize(640, 480);
+        win.setSize(1280, 720);
         win.setFullscreen(false);
         win.createWindow("CivGame");
+
+        glfwSetFramebufferSizeCallback(win.getWindow(), (window, width, height) -> {
+            glViewport(0, 0, width, height);
+        });
 
         //try to understand more
         GL.createCapabilities();//initializes LWJGL's OpenGL bindings for the current context / allows for communication to GPU and for java to use OpenGL /
@@ -40,7 +44,7 @@ public class Main {
 
         Shader shader = new Shader("shader"); // loads and compiles shader files (shader.vs and shader.fs).
 
-        World world = new World();
+        World world = new World(1280,720);
 
         // After creating the camera and world
 
@@ -53,6 +57,7 @@ public class Main {
         double unprocessed = 0;
 
         while (!win.shouldClose()) { //keeps the window open / rendering loop
+
             boolean can_render = false;
 
             double time_2 = Timer.getTime();

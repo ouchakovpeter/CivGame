@@ -10,6 +10,8 @@ public class GameController {
 
     private int movementSpeed = 5;
 
+    private int zoom = 1;
+
     public GameController(Window window, Camera camera){
         this.window = window;
         this.camera = camera;
@@ -54,7 +56,11 @@ public class GameController {
         }
 
         if (input.getScrollY() != 0) {
-            System.out.println(input.getScrollY());
+            zoom += (float)input.getScrollY();
+            if(zoom < 1){
+                zoom = 1;
+            }
+            camera.setZoom(zoom);
         }
     }
 }

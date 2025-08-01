@@ -6,12 +6,12 @@ import org.joml.Vector3f;
 public class Camera {
     private Vector3f position; //sets position in world space
     private Matrix4f projection; //projection The orthographic projection matrix that defines how the scene is projected onto the screen (no perspective distortion).
-    private Matrix4f view;
-    public Camera(int width, int height){
+    private float zoom = 1.0f;
+    public Camera(int width, int height)
+    {
         position = new Vector3f(0,0,0); //initialized camera at 0,0,0;
         projection = new Matrix4f().setOrtho2D(-width/2, width/2, -height/2, height/2);
         //Sets up a 2D orthographic projection from -width/2 to width/2 horizontally and -height/2 to height/2 vertically, which centers the projection on the origin.
-
     }
 
     public void setPosition(Vector3f position){
@@ -25,11 +25,22 @@ public class Camera {
         return position;
     }
 
-    public Matrix4f getProjection() {
-        Matrix4f target = new Matrix4f();
-        Matrix4f pos = new Matrix4f().setTranslation(position);
+    public void setZoom(float zoom) {
+        this.zoom = zoom;
+    }
+    public float getZoom() {
+        return zoom;
+    }
 
-        target = projection.mul(pos, target);
+    public Matrix4f getProjection() {
+        Matrix4f target = new Matrix4f(); //used to store the result of multiplying the projection and translation matrices
+        //Matrix4f pos = new Matrix4f().setTranslation(position); //creates a translation matrix based on the camera’s current
+
+        Matrix4f view = new Matrix4f();
+                view.translate(position);
+                view.scale(zoom); // Zoom in or out
+
+        target = projection.mul(view, target); //Multiply the projection matrix by the translation matrix, and store the result in target
         return target;
     }
 }
