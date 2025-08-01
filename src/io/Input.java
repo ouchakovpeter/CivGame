@@ -9,6 +9,7 @@ public class Input {
     private double mouseX, mouseY;
     private double lastMouseX, lastMouseY;
     private double deltaX, deltaY;
+    private double scrollX, scrollY;
 
     public Input(long window){
         this.window = window;
@@ -20,6 +21,10 @@ public class Input {
         for(int i = 0; i < GLFW_MOUSE_BUTTON_LAST; i++){
             mouse[i] = false;
         }
+        glfwSetScrollCallback(window, (win, xoffset, yoffset) -> {
+            scrollX += xoffset;
+            scrollY += yoffset;
+        });
     }
 
     public boolean isKeyDown(int key){
@@ -47,6 +52,7 @@ public class Input {
         return(!isMouseButtonDown(button) && mouse[button]);
     }
 
+
     public void update (){
         for(int i = 0; i < GLFW_KEY_LAST; i++){
             keys[i] = isKeyDown(i);
@@ -66,6 +72,9 @@ public class Input {
 
         deltaX = mouseX - lastMouseX;
         deltaY = mouseY - lastMouseY;
+
+        scrollX = 0;
+        scrollY = 0;
     }
     public double getMouseX() { return mouseX; }
     public double getMouseY() { return mouseY; }
@@ -75,4 +84,6 @@ public class Input {
     public void setDeltaX(double newDeltaX) { this.deltaX = newDeltaX; }
     public void setDeltaY(double newDeltaY) { this.deltaX = newDeltaY; }
 
+    public double getScrollX() { return scrollX; }
+    public double getScrollY() { return scrollY; }
 }

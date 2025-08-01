@@ -45,12 +45,16 @@ public class GameController {
             camera.getPosition().add(-movementSpeed, 0, 0);
         }
 
-//        rotation
-//        if (input.isKeyPressed(GLFW_KEY_E)) {
-//            camera.getPosition().mul((float)Math.toRadians(0), (float)Math.toRadians(90), (float)Math.toRadians(0));
-//        }
-//        if (input.isKeyDown(GLFW_KEY_Q)) {
-//            camera.getPosition().add(-1, 1, 0);
-//        }
+        if (input.isKeyDown(GLFW_KEY_1)) {
+            camera.getPosition().mul(0.5f);
+        }
+
+        if (input.isKeyDown(GLFW_KEY_2)) {
+            camera.getPosition().mul(5);
+        }
+
+        if (input.getScrollY() != 0) {
+            System.out.println(input.getScrollY());
+        }
     }
 }

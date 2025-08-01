@@ -19,8 +19,8 @@ public class World {
     private int scale;
 
     public World(){
-        width = 128;
-        height = 128;
+        width = 640;
+        height = 480;
         scale = 16;
 
         tiles = new byte[width * height];
