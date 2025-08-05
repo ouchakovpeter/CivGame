@@ -47,6 +47,19 @@ public class GameController {
             camera.getPosition().add(-movementSpeed, 0, 0);
         }
 
+        if (input.isKeyDown(GLFW_KEY_E)) {
+            System.out.println("E Pressed");
+        }
+
+        if (input.isKeyDown(GLFW_KEY_Q)) {
+            System.out.println("Q Pressed");
+        }
+
+        if(input.isKeyDown(GLFW_KEY_LEFT_SHIFT))
+        {
+            System.out.println("Shift Pressed");
+        }
+
         if (input.isKeyDown(GLFW_KEY_1)) {
             camera.getPosition().mul(0.5f);
         }
@@ -60,7 +73,6 @@ public class GameController {
             if(zoom < 1){
                 zoom = 1;
             }
-            camera.setZoom(zoom);
         }
     }
 }

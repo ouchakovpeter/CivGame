@@ -48,12 +48,12 @@ public class TileRenderer {
             }
         }
     }
-    public void renderTile(Tile id, int x, int y, Shader shader, Matrix4f world, Camera cam){
+    public void renderTile(Tile id, int x, int y, int z, Shader shader, Matrix4f world, Camera cam){
         shader.bind();
         if(tile_textures.containsKey(id.getTexture())){
             tile_textures.get(id.getTexture()).bind(0);
         }
-        Matrix4f tile_pos = new Matrix4f().translate(new Vector3f(x*2, y*2, 0));
+        Matrix4f tile_pos = new Matrix4f().translate(new Vector3f(x*2, y*2, z * 0.5f));
         Matrix4f target = new Matrix4f();
 
         cam.getProjection().mul(world, target);
