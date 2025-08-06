@@ -38,10 +38,9 @@ public class World {
 
     public void render(TileRenderer render, Shader shader, Camera camera, Window window) {
 
+        //finds the amount of tiles on the screen and then only renders that amount
         int tilesAcross = (int) Math.ceil(window.getWidth() / (scale * 2)) + 2;
         int tilesDown = (int) Math.ceil(window.getHeight() / (scale * 2)) + 2;
-
-        //float zoom = camera.getZoom();
 
         int posX = ((int) camera.getPosition().x + (window.getWidth() / 2)) / (int) (scale * 2);
         int posY = ((int) camera.getPosition().y - (window.getHeight() / 2)) / (int) (scale * 2);
@@ -66,25 +65,25 @@ public class World {
         int w = -width * (int)effectiveScale * 2;
         int h = height * (int)effectiveScale * 2;
 
-        //right
-        if(pos.x>-(window.getWidth()/2)+scale){
-            pos.x = -(window.getWidth()/2)+scale;
-        }
-
-        //left
-        if(pos.x < w + (window.getWidth()/2)+scale){
-            pos.x = w + (window.getWidth()/2)+scale;
-        }
-
-        //top
-        if(pos.y < (window.getHeight()/2) - scale){
-            pos.y = (window.getHeight()/2) - scale;
-        }
-
-        //bottom
-        if(pos.y > h - (window.getHeight()/2)-scale){
-            pos.y = h - (window.getHeight()/2)-scale;
-        }
+//        //right
+//        if(pos.x>-(window.getWidth()/2)+scale){
+//            pos.x = -(window.getWidth()/2)+scale;
+//        }
+//
+//        //left
+//        if(pos.x < w + (window.getWidth()/2)+scale){
+//            pos.x = w + (window.getWidth()/2)+scale;
+//        }
+//
+//        //top
+//        if(pos.y < (window.getHeight()/2) - scale){
+//            pos.y = (window.getHeight()/2) - scale;
+//        }
+//
+//        //bottom
+//        if(pos.y > h - (window.getHeight()/2)-scale){
+//            pos.y = h - (window.getHeight()/2)-scale;
+//        }
     }
 
     public void setTile(Tile tile, int x, int y, int z) {

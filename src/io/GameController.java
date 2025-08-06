@@ -35,16 +35,16 @@ public class GameController {
 
         // WASD or arrow keys can go here too // turn this into a switch
         if (input.isKeyDown(GLFW_KEY_W)) {
-            camera.getPosition().add(0, movementSpeed, 0);
-        }
-        if (input.isKeyDown(GLFW_KEY_S)) {
             camera.getPosition().add(0, -movementSpeed, 0);
         }
+        if (input.isKeyDown(GLFW_KEY_S)) {
+            camera.getPosition().add(0, movementSpeed, 0);
+        }
         if (input.isKeyDown(GLFW_KEY_D)) {
-            camera.getPosition().add(movementSpeed, 0, 0);
+            camera.getPosition().add(-movementSpeed, 0, 0);
         }
         if (input.isKeyDown(GLFW_KEY_A)) {
-            camera.getPosition().add(-movementSpeed, 0, 0);
+            camera.getPosition().add(movementSpeed, 0, 0);
         }
 
         if (input.isKeyDown(GLFW_KEY_E)) {
