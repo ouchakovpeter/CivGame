@@ -4,66 +4,106 @@ import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
 public class Camera {
-    private Vector3f position; //sets position in world space
-    private Matrix4f projection; //projection The orthographic projection matrix that defines how the scene is projected onto the screen (no perspective distortion).
+    private Vector3f position;
+    private Matrix4f projection;
+    private float zoom = 5.0f; 
+    private float aspectRatio;
+    private float yaw = 0.0f;   
+    private float pitch = 0.0f; 
 
-    private float yaw = -90f;
-    private float pitch = 0f;
-
-    public Camera(int width, int height)
-    {
-        position = new Vector3f(0,0,0); //initialized camera at 0,0,0;
-        projection = new Matrix4f().perspective((float) Math.toRadians(70.0f), (float) width / height, 0.1f, 1000f);
-        //Sets up a 2D orthographic projection from -width/2 to width/2 horizontally and -height/2 to height/2 vertically, which centers the projection on the origin.
+    public Camera(int width, int height) {
+        position = new Vector3f(0, 0, 0);
+        this.aspectRatio = (float)width / (float)height;
+        updateProjection(width, height);
+    }
+    
+    public void updateProjection(int width, int height) {
+        this.aspectRatio = (float)width / (float)height;
+        float viewWidth = 20.0f * zoom; 
+        float viewHeight = viewWidth / aspectRatio;
+        
+        projection = new Matrix4f().ortho(
+                -viewWidth/2,   
+                viewWidth/2,    
+                -viewHeight/2,  
+                viewHeight/2,   
+                -1000.0f,       
+                1000.0f        
+        );
     }
 
-    public void setPosition(Vector3f position){
-        this.position = position;
+    public void setPosition(Vector3f position) {
+        this.position.set(position);
     }
-    public void addPosition(Vector3f position){
-        this.position.add(position);
+
+    public void addPosition(Vector3f delta) {
+        float angle = (float)Math.toRadians(yaw);
+        float cos = (float)Math.cos(angle);
+        float sin = (float)Math.sin(angle);
+        
+        float rotatedX = delta.x * cos - delta.y * sin;
+        float rotatedY = delta.x * sin + delta.y * cos;
+        
+        position.add(rotatedX, rotatedY, 0);
     }
 
     public Vector3f getPosition() {
         return position;
     }
 
-//    public Matrix4f getProjection() {
-//        Matrix4f target = new Matrix4f(); //used to store the result of multiplying the projection and translation matrices
-//        //Matrix4f pos = new Matrix4f().setTranslation(position); //creates a translation matrix based on the camera’s current
-//
-//        Matrix4f view = new Matrix4f();
-//                view.translate(position);
-//
-//        target = projection.mul(view, target); //Multiply the projection matrix by the translation matrix, and store the result in target
-//        return target;
-//    }
-
-    public Matrix4f getProjection() {
-        float cosPitch = (float)Math.cos(Math.toRadians(pitch));
-        float sinPitch = (float)Math.sin(Math.toRadians(pitch));
-        float cosYaw = (float)Math.cos(Math.toRadians(yaw));
-        float sinYaw = (float)Math.sin(Math.toRadians(yaw));
-
-        Vector3f direction = new Vector3f(
-                cosPitch * sinYaw, sinPitch,
-                -cosPitch * cosYaw
-        ).normalize();
-
-        Vector3f target = new Vector3f(position).add(direction);
-
-        Matrix4f view = new Matrix4f().lookAt(position, target, new Vector3f(0, 1, 0));
-        return new Matrix4f(projection).mul(view);
+    public Matrix4f getViewMatrix() {
+        return new Matrix4f()
+            .translate(-position.x, -position.y, 0)
+            .rotateY((float)Math.toRadians(-yaw))
+            .rotateX((float)Math.toRadians(-pitch));
     }
 
-
-    public void addYaw(float amount) {
-        yaw += amount;
+    public Matrix4f getProjectionMatrix() {
+        return projection;
     }
 
-    public void addPitch(float amount) {
-        pitch += amount;
-        pitch = Math.max(-89.0f, Math.min(89.0f, pitch)); // prevent flipping
+    public Matrix4f getViewProjectionMatrix() {
+        return new Matrix4f(projection).mul(getViewMatrix());
     }
 
+    public void addYaw(float degrees) {
+        this.yaw = (this.yaw + degrees) % 360;
+    }
+
+    public void addPitch(float degrees) {
+        this.pitch = Math.max(-89, Math.min(89, this.pitch + degrees));
+    }
+
+    public float getYaw() {
+        return yaw;
+    }
+
+    public float getPitch() {
+        return pitch;
+    }
+
+    public void setZoom(float zoom) {
+        this.zoom = Math.max(0.5f, Math.min(20.0f, zoom));
+        updateProjection((int)(40 * aspectRatio), 40);
+    }
+
+    public float getZoom() {
+        return zoom;
+    }
+
+    public void moveBy(float dx, float dy) {
+        // Adjust for zoom level
+        float zoomFactor = 1.0f / zoom;
+        
+        // Rotate the movement vector by the inverse of the camera's yaw
+        float angle = (float)Math.toRadians(-yaw);
+        float cos = (float)Math.cos(angle);
+        float sin = (float)Math.sin(angle);
+        
+        // Apply rotation and zoom to the movement
+        float rotatedX = (dx * cos - dy * sin) * zoomFactor * 0.1f;
+        float rotatedY = (dx * sin + dy * cos) * zoomFactor * 0.1f;
+        
+        position.add(-rotatedX, -rotatedY, 0);
+    }
 }

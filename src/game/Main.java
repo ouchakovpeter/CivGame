@@ -1,9 +1,13 @@
 package game;
 
+import static java.sql.Types.NULL;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL43C.GL_DEBUG_OUTPUT;
+import static org.lwjgl.opengl.GL43C.glDebugMessageCallback;
 
 import io.*;
+import org.lwjgl.system.MemoryUtil;
 import render.*;
 import world.*;
 
@@ -25,17 +29,16 @@ public class Main {
         win.setSize(1280, 720);
         win.setFullscreen(false);
         win.createWindow("CivGame");
+        Camera camera = new Camera(win.getWidth(), win.getHeight());
 
         glfwSetFramebufferSizeCallback(win.getWindow(), (window, width, height) -> {
             glViewport(0, 0, width, height);
+            camera.updateProjection(width, height);
         });
 
         //try to understand more
         GL.createCapabilities();//initializes LWJGL's OpenGL bindings for the current context / allows for communication to GPU and for java to use OpenGL /
         // Loads OpenGL functions for Java to use.
-
-        Camera camera = new Camera(win.getWidth(), win.getHeight());
-        GameController controller = new GameController(win, camera);
 
         glEnable(GL_TEXTURE_2D);
 
@@ -44,9 +47,12 @@ public class Main {
 
         Shader shader = new Shader("shader"); // loads and compiles shader files (shader.vs and shader.fs).
 
-        World world = new World(1280,720);
+        World world = new World(100,100);
 
         // After creating the camera and world
+
+
+        GameController controller = new GameController(win, camera, world);
 
         double frame_cap = 1.0/120.0;
 
@@ -73,7 +79,7 @@ public class Main {
                     can_render = true;
 
                     controller.update();
-                    world.correctCamera(camera,win);
+                    //world.correctCamera(camera,win);
 
                     win.update(); //checks for events for player input for example
 
