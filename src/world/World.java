@@ -47,7 +47,7 @@ public class World {
         float cameraZ = cameraPos.z;
         
         // Calculate view area based on camera zoom and aspect ratio
-        float viewWidth = 20.0f * camera.getZoom();
+        float viewWidth = 20.0f;
         float viewHeight = viewWidth * ((float)window.getHeight() / window.getWidth());
         
         // Calculate which tiles should be visible

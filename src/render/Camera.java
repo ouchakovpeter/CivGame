@@ -23,10 +23,10 @@ public class Camera {
         float viewHeight = viewWidth / aspectRatio;
         
         projection = new Matrix4f().ortho(
-                -viewWidth/2,   
-                viewWidth/2,    
-                -viewHeight/2,  
-                viewHeight/2,   
+                -viewWidth,
+                viewWidth,
+                -viewHeight,
+                viewHeight,
                 -1000.0f,       
                 1000.0f        
         );
@@ -54,24 +54,20 @@ public class Camera {
     public Matrix4f getViewMatrix() {
         return new Matrix4f()
             .translate(-position.x, -position.y, 0)
-            .rotateY((float)Math.toRadians(-yaw))
-            .rotateX((float)Math.toRadians(-pitch));
+            .rotateY((float)-yaw)
+            .rotateX((float)-pitch);
     }
 
     public Matrix4f getProjectionMatrix() {
         return projection;
     }
 
-    public Matrix4f getViewProjectionMatrix() {
-        return new Matrix4f(projection).mul(getViewMatrix());
-    }
-
     public void addYaw(float degrees) {
-        this.yaw = (this.yaw + degrees) % 360;
+        this.yaw = this.yaw + degrees;
     }
 
     public void addPitch(float degrees) {
-        this.pitch = Math.max(-89, Math.min(89, this.pitch + degrees));
+        this.pitch = this.pitch + degrees;
     }
 
     public float getYaw() {
@@ -82,18 +78,9 @@ public class Camera {
         return pitch;
     }
 
-    public void setZoom(float zoom) {
-        this.zoom = Math.max(0.5f, Math.min(20.0f, zoom));
-        updateProjection((int)(40 * aspectRatio), 40);
-    }
-
-    public float getZoom() {
-        return zoom;
-    }
 
     public void moveBy(float dx, float dy) {
         // Adjust for zoom level
-        float zoomFactor = 1.0f / zoom;
         
         // Rotate the movement vector by the inverse of the camera's yaw
         float angle = (float)Math.toRadians(-yaw);
@@ -101,8 +88,8 @@ public class Camera {
         float sin = (float)Math.sin(angle);
         
         // Apply rotation and zoom to the movement
-        float rotatedX = (dx * cos - dy * sin) * zoomFactor * 0.1f;
-        float rotatedY = (dx * sin + dy * cos) * zoomFactor * 0.1f;
+        float rotatedX = (dx * cos - dy * sin) * 0.1f;
+        float rotatedY = (dx * sin + dy * cos) * 0.1f;
         
         position.add(-rotatedX, -rotatedY, 0);
     }
