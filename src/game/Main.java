@@ -29,7 +29,8 @@ public class Main {
         win.setSize(1280, 720);
         win.setFullscreen(false);
         win.createWindow("CivGame");
-        Camera camera = new Camera(win.getWidth(), win.getHeight());
+        World world = new World(50,50);
+        Camera camera = new Camera(win.getWidth(), win.getHeight(), world);
 
         glfwSetFramebufferSizeCallback(win.getWindow(), (window, width, height) -> {
             glViewport(0, 0, width, height);
@@ -46,8 +47,6 @@ public class Main {
         TileRenderer tiles = new TileRenderer();
 
         Shader shader = new Shader("shader"); // loads and compiles shader files (shader.vs and shader.fs).
-
-        World world = new World(50,50);
 
         // After creating the camera and world
 
@@ -88,7 +87,7 @@ public class Main {
                     //frame rate counter
                     if(frame_time >= 1.0){
                         frame_time = 0;
-                        //System.out.println("FPS:" + frames);
+                        System.out.println("FPS:" + frames);
                         frames = 0;
                     }
                 }

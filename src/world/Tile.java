@@ -4,7 +4,7 @@ public class Tile {
     public static Tile tiles[] = new Tile[16];//amount of tiles in the world
     public static byte number_of_tiles = 0;
 
-    public static final Tile test_tile = new Tile("grid");
+    public static final Tile test_tile = new Tile("grass");
     public static final Tile test_tile_2 = new Tile("smile2");
 
     private byte id;

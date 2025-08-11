@@ -72,7 +72,6 @@ public class GameController {
 
         if (input.getScrollY() != 0) {
             pitchAngle += (float)input.getScrollY()*pitchSpeed;
-            System.out.println(pitchAngle);
             if(pitchAngle > 2.2) {
                 pitchAngle = 2;
             }

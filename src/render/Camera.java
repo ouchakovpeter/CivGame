@@ -2,6 +2,7 @@ package render;
 
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
+import world.*;
 
 public class Camera {
     private Vector3f position;
@@ -9,10 +10,12 @@ public class Camera {
     private Matrix4f projection;
     private float aspectRatio;
     private float roll = 0.0f;
-    private float pitch = 0.0f; 
+    private float pitch = 0.0f;
+    private final World world;
 
-    public Camera(int width, int height) {
-        position = new Vector3f(0, 0, 0);
+    public Camera(int width, int height,World world) {
+        this.world = world;
+        position = new Vector3f(world.getWidth()/2, world.getHeight()/2, 0);
         forward = new Vector3f(0, 0, 0);
         this.aspectRatio = (float)width / (float)height;
         updateProjection(width, height);

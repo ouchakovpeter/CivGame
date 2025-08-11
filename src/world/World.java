@@ -71,4 +71,12 @@ public class World {
     public Matrix4f getWorldTransform() {
         return worldTransform;
     }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
 }
