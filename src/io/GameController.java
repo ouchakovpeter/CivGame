@@ -31,11 +31,11 @@ public class GameController {
 
         boolean moving = false;
         // Mouse drag to move camera
-        if (input.isMouseButtonDown(GLFW_MOUSE_BUTTON_LEFT)) {
-            float dx = (float) input.getDeltaX();
-            float dy = (float) input.getDeltaY();
-            camera.getPosition().sub(dx*movementSpeed, -dy*movementSpeed, 0);
-        }
+//        if (input.isMouseButtonDown(GLFW_MOUSE_BUTTON_LEFT)) {
+//            float dx = (float) input.getDeltaX();
+//            float dy = (float) input.getDeltaY();
+//            camera.getPosition().sub(dx*movementSpeed, -dy*movementSpeed, 0);
+//        }
 
         // WASD or arrow keys can go here too // turn this into a switch
         float inputX = 0;

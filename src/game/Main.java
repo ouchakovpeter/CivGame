@@ -29,7 +29,7 @@ public class Main {
         win.setSize(1280, 720);
         win.setFullscreen(false);
         win.createWindow("CivGame");
-        World world = new World(50,50);
+        World world = new World(25,25);
         Camera camera = new Camera(win.getWidth(), win.getHeight(), world);
 
         glfwSetFramebufferSizeCallback(win.getWindow(), (window, width, height) -> {
