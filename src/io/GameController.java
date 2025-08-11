@@ -10,9 +10,9 @@ public class GameController {
     private final Camera camera;
     private final Window window;
     private final World world;
-    private float movementSpeed = 0.00001f;
-    private final float rotationSpeed = 1.5f;
-    private final float pitchSpeed = 1.0f;
+    private float movementSpeed = 0.1f;
+    private final float rotationSpeed = 0.01f;
+    private final float pitchSpeed = 0.01f;
 
     public GameController(Window window, Camera camera, World world) {
         this.window = window;
@@ -28,47 +28,43 @@ public class GameController {
             glfwSetWindowShouldClose(window.getWindow(), true);
         }
 
-        // Handle movement with rotation
-        Vector3f movement = new Vector3f();
-
-        // Forward/Backward movement (W/S)
-        if (input.isKeyDown(GLFW_KEY_W)) movement.y = movementSpeed;
-        if (input.isKeyDown(GLFW_KEY_S)) movement.y = -movementSpeed;
-
-        // Strafe Left/Right (A/D)
-        if (input.isKeyDown(GLFW_KEY_A)) movement.x = -movementSpeed;
-        if (input.isKeyDown(GLFW_KEY_D)) movement.x = movementSpeed;
-
-        // Normalize diagonal movement
-        if (movement.lengthSquared() > 0) {
-            movement.normalize().mul(movementSpeed);
-            camera.addPosition(movement);
+        boolean moving = false;
+        // Mouse drag to move camera
+        if (input.isMouseButtonDown(GLFW_MOUSE_BUTTON_LEFT)) {
+            float dx = (float) input.getDeltaX();
+            float dy = (float) input.getDeltaY();
+            camera.getPosition().sub(dx*movementSpeed, -dy*movementSpeed, 0);
         }
 
-        // Handle rotation with Q/E (yaw) and R/F (pitch)
+        // WASD or arrow keys can go here too // turn this into a switch
+        if (input.isKeyDown(GLFW_KEY_W)) {
+            camera.getPosition().add(0, movementSpeed, 0);
+        }
+        if (input.isKeyDown(GLFW_KEY_S)) {
+            camera.getPosition().add(0, -movementSpeed, 0);
+        }
+        if (input.isKeyDown(GLFW_KEY_D)) {
+            camera.getPosition().add(movementSpeed, 0, 0);
+        }
+        if (input.isKeyDown(GLFW_KEY_A)) {
+            camera.getPosition().add(-movementSpeed, 0, 0);
+        }
+
         if (input.isKeyDown(GLFW_KEY_Q)) {
-            camera.addYaw(-rotationSpeed);
+            camera.addRoll(-rotationSpeed);
         }
         if (input.isKeyDown(GLFW_KEY_E)) {
-            camera.addYaw(rotationSpeed);
+            camera.addRoll(rotationSpeed);
         }
-
-        // Handle pitch with R/F
         if (input.isKeyDown(GLFW_KEY_R)) {
             camera.addPitch(-pitchSpeed);
         }
         if (input.isKeyDown(GLFW_KEY_F)) {
-            camera.addPitch(pitchSpeed);
+            camera.addPitch(+pitchSpeed);
         }
 
-        // Handle mouse dragging for camera movement
-        if (input.isMouseButtonDown(GLFW_MOUSE_BUTTON_LEFT)) {
-            float dx = (float) input.getDeltaX();
-            float dy = (float) input.getDeltaY();
-            camera.moveBy(dx, dy);
-        }
+        if (input.getScrollY() != 0) {
 
-        // Speed boost with Shift
-        movementSpeed = input.isKeyDown(GLFW_KEY_LEFT_SHIFT) ? 10.0f : 5.0f;
+        }
     }
 }

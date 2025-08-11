@@ -47,7 +47,7 @@ public class Main {
 
         Shader shader = new Shader("shader"); // loads and compiles shader files (shader.vs and shader.fs).
 
-        World world = new World(100,100);
+        World world = new World(10,10);
 
         // After creating the camera and world
 
