@@ -47,10 +47,9 @@ public class Main {
 
         Shader shader = new Shader("shader"); // loads and compiles shader files (shader.vs and shader.fs).
 
-        World world = new World(10,10);
+        World world = new World(50,50);
 
         // After creating the camera and world
-
 
         GameController controller = new GameController(win, camera, world);
 
@@ -64,6 +63,7 @@ public class Main {
 
         while (!win.shouldClose()) { //keeps the window open / rendering loop
 
+            //System.out.println(camera.getPosition());
             boolean can_render = false;
 
             double time_2 = Timer.getTime();
@@ -87,7 +87,7 @@ public class Main {
                     //frame rate counter
                     if(frame_time >= 1.0){
                         frame_time = 0;
-                        System.out.println("FPS:" + frames);
+                        //System.out.println("FPS:" + frames);
                         frames = 0;
                     }
                 }

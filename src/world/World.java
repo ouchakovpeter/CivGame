@@ -1,5 +1,7 @@
 package world;
 
+import org.joml.Vector2f;
+import org.joml.Vector4f;
 import render.*;
 import io.*;
 import org.joml.Matrix4f;
@@ -40,18 +42,18 @@ public class World {
     }
 
     public void render(TileRenderer renderer, Shader shader, Camera camera, Window window) {
-        // Get camera position and rotation
-        Vector3f cameraPos = camera.getPosition();
-        float cameraX = cameraPos.x;
-        float cameraY = cameraPos.y;
-        float cameraZ = cameraPos.z;
+
+        float tileX = (camera.getPosition().x);
+        float tileY = (camera.getPosition().y);
+
 
         // Calculate world transform
         worldTransform.identity()
-            .translate(-cameraX, -cameraY, -cameraZ)  // Center camera
-            .rotateY((float)Math.toRadians(-camera.getYaw()))  // Apply yaw
-            .rotateX((float)Math.toRadians(-camera.getPitch())) // Apply pitch
-            .scale(scale);  // Apply scale
+                .translate(tileX, tileY, 0)
+                .rotateX((float)(-camera.getPitch()))
+                .rotateZ((float)(-camera.getRoll()))
+                .translate(-tileX, -tileY, 0)
+                .scale(scale);
 
         for (int z = 0; z < depth; z++) {
             for (int x = 0; x < width; x++) {

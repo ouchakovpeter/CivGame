@@ -39,10 +39,7 @@ public class Camera {
 //        return new Matrix4f().translate(-position.x, 0, -position.y).rotateX((float)-pitch).rotateZ((float)-roll);
 //    }
 public Matrix4f getViewMatrix() {
-    return new Matrix4f()
-            .rotateX((float)Math.toRadians(35.264f))
-            .rotateZ((float)Math.toRadians(45f))
-            .translate(-position.x, -position.y, -position.z);
+    return new Matrix4f().translate(-position.x, -position.y, -position.z);
 }
 
     public Matrix4f getProjectionMatrix() {
@@ -57,7 +54,7 @@ public Matrix4f getViewMatrix() {
         this.pitch = this.pitch + degrees;
     }
 
-    public float getYaw() {
+    public float getRoll() {
         return roll;
     }
 
