@@ -12,7 +12,8 @@ public class GameController {
     private final World world;
     private float movementSpeed = 0.1f;
     private final float rotationSpeed = 0.01f;
-    private final float pitchSpeed = 0.01f;
+    private final float pitchSpeed = 0.1f;
+    private float pitchAngle = 1;
 
     public GameController(Window window, Camera camera, World world) {
         this.window = window;
@@ -37,34 +38,50 @@ public class GameController {
         }
 
         // WASD or arrow keys can go here too // turn this into a switch
-        if (input.isKeyDown(GLFW_KEY_W)) {
-            camera.getPosition().add(0, movementSpeed, 0);
-        }
-        if (input.isKeyDown(GLFW_KEY_S)) {
-            camera.getPosition().add(0, -movementSpeed, 0);
-        }
-        if (input.isKeyDown(GLFW_KEY_D)) {
-            camera.getPosition().add(movementSpeed, 0, 0);
-        }
-        if (input.isKeyDown(GLFW_KEY_A)) {
-            camera.getPosition().add(-movementSpeed, 0, 0);
+        float inputX = 0;
+        float inputY = 0;
+
+        if (input.isKeyDown(GLFW_KEY_W)) inputY -= 1;
+        if (input.isKeyDown(GLFW_KEY_S)) inputY += 1;
+        if (input.isKeyDown(GLFW_KEY_D)) inputX += 1;
+        if (input.isKeyDown(GLFW_KEY_A)) inputX -= 1;
+
+        // Normalize input vector
+        float length = (float) Math.sqrt(inputX * inputX + inputY * inputY);
+        if (length > 0) {
+            inputX /= length;
+            inputY /= length;
         }
 
+        Vector3f right = new Vector3f(camera.getForward().y, -camera.getForward().x, 0); // perpendicular right vector
+
+        Vector3f movement = new Vector3f();
+
+        movement.fma(inputX * movementSpeed, camera.getForward());  // forward/backward
+        movement.fma(inputY * movementSpeed, right);    // left/right
+
+        camera.getPosition().add(movement);
+
+        //z roll input
         if (input.isKeyDown(GLFW_KEY_Q)) {
             camera.addRoll(-rotationSpeed);
         }
         if (input.isKeyDown(GLFW_KEY_E)) {
             camera.addRoll(rotationSpeed);
         }
-        if (input.isKeyDown(GLFW_KEY_R)) {
-            camera.addPitch(-pitchSpeed);
-        }
-        if (input.isKeyDown(GLFW_KEY_F)) {
-            camera.addPitch(+pitchSpeed);
-        }
 
         if (input.getScrollY() != 0) {
-            
+            pitchAngle += (float)input.getScrollY()*pitchSpeed;
+            System.out.println(pitchAngle);
+            if(pitchAngle > 2.2) {
+                pitchAngle = 2;
+            }
+            if(pitchAngle < -0.2) {
+                pitchAngle = 0;
+            }
+            if(pitchAngle > 0 && pitchAngle < 2) {
+                camera.addPitch(((float)input.getScrollY())*pitchSpeed);
+            }
         }
     }
 }

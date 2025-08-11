@@ -63,7 +63,8 @@ public class Main {
 
         while (!win.shouldClose()) { //keeps the window open / rendering loop
 
-            //System.out.println(camera.getPosition());
+            //System.out.println(camera.getRoll());
+
             boolean can_render = false;
 
             double time_2 = Timer.getTime();

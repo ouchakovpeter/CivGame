@@ -43,16 +43,11 @@ public class World {
 
     public void render(TileRenderer renderer, Shader shader, Camera camera, Window window) {
 
-        float tileX = (camera.getPosition().x);
-        float tileY = (camera.getPosition().y);
-
+        int posX = ((int)camera.getPosition().x + (window.getWidth()/2)) / (scale * 2);
+        int posY = ((int)camera.getPosition().y - (window.getHeight()/2)) / (scale * 2);
 
         // Calculate world transform
         worldTransform.identity()
-                .translate(tileX, tileY, 0)
-                .rotateX((float)(-camera.getPitch()))
-                .rotateZ((float)(-camera.getRoll()))
-                .translate(-tileX, -tileY, 0)
                 .scale(scale);
 
         for (int z = 0; z < depth; z++) {

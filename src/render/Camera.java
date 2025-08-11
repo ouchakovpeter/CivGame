@@ -5,6 +5,7 @@ import org.joml.Vector3f;
 
 public class Camera {
     private Vector3f position;
+    private Vector3f forward;
     private Matrix4f projection;
     private float aspectRatio;
     private float roll = 0.0f;
@@ -12,6 +13,7 @@ public class Camera {
 
     public Camera(int width, int height) {
         position = new Vector3f(0, 0, 0);
+        forward = new Vector3f(0, 0, 0);
         this.aspectRatio = (float)width / (float)height;
         updateProjection(width, height);
     }
@@ -31,21 +33,26 @@ public class Camera {
         );
     }
 
-    public Vector3f getPosition() {
-        return position;
+    public Matrix4f getViewMatrix() {
+    return new Matrix4f()
+            .translate(-position.x, -position.y, -position.z)
+            .translate(position.x, position.y, 0)
+            .rotateX((float)(-getPitch()))
+            .rotateZ((float)(-getRoll()))
+            .translate(-position.x, -position.y, 0);
     }
-
-//    public Matrix4f getViewMatrix() {
-//        return new Matrix4f().translate(-position.x, 0, -position.y).rotateX((float)-pitch).rotateZ((float)-roll);
-//    }
-public Matrix4f getViewMatrix() {
-    return new Matrix4f().translate(-position.x, -position.y, -position.z);
-}
 
     public Matrix4f getProjectionMatrix() {
         return projection;
     }
+    public Vector3f getPosition() {
+        return position;
+    }
 
+    public Vector3f getForward() {
+        Vector3f forward = new Vector3f((float)Math.cos(roll), (float)Math.sin(roll), 0);
+        return forward;
+    }
     public void addRoll(float degrees) {
         this.roll = this.roll + degrees;
     }
