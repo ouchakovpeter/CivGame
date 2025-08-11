@@ -29,7 +29,8 @@ public class Main {
         win.setSize(1280, 720);
         win.setFullscreen(false);
         win.createWindow("CivGame");
-        World world = new World(25,25);
+        WorldGenerator generation = new WorldGenerator(25,25, 1);
+        World world = new World(generation);
         Camera camera = new Camera(win.getWidth(), win.getHeight(), world);
 
         glfwSetFramebufferSizeCallback(win.getWindow(), (window, width, height) -> {
@@ -59,6 +60,8 @@ public class Main {
 
         double time = Timer.getTime();
         double unprocessed = 0;
+
+
 
         while (!win.shouldClose()) { //keeps the window open / rendering loop
 

@@ -4,11 +4,13 @@ import org.joml.Vector2f;
 import org.joml.Vector4f;
 import render.*;
 import io.*;
+import util.*;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
 public class World {
     private byte[] tiles;
+    private final WorldGenerator generator;
     private int width;
     private int height;
     private int depth;
@@ -17,28 +19,17 @@ public class World {
     // World transformation matrix
     private Matrix4f worldTransform;
 
-    public World(int worldWidth, int worldHeight) {
-        this.width = worldWidth;
-        this.height = worldHeight;
-        this.depth = 1;
+    public World(WorldGenerator generator) {
+        this.generator = generator;
+        this.width = generator.getWidth();
+        this.height = generator.getHeight();
+        this.depth = generator.getDepth();
         this.scale = 1;
 
         tiles = new byte[width * height * depth];
         worldTransform = new Matrix4f().identity();
-
+        generator.generateNoise();
         // Fill with some test tiles
-    }
-
-    private int index(int x, int y, int z) {
-        return x + y * width + z * width * height;
-    }
-
-    public Tile getTiles(int x, int y, int z) {
-        try {
-            return Tile.tiles[tiles[index(x, y, z)]];
-        } catch (ArrayIndexOutOfBoundsException e) {
-            return null;
-        }
     }
 
     public void render(TileRenderer renderer, Shader shader, Camera camera, Window window) {
@@ -50,15 +41,27 @@ public class World {
         worldTransform.identity()
                 .scale(scale);
 
-        for (int z = 0; z < depth; z++) {
-            for (int x = 0; x < width; x++) {
-                for (int y = 0; y < height; y++) {
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                for (int z = 0; z < depth; z++) {
                     Tile t = getTiles(x, y, z);
                     if (t != null) {
                         renderer.renderTile(t, x, y, z, shader, worldTransform, camera);
                     }
                 }
             }
+        }
+    }
+
+    private int index(int x, int y, int z) {
+        return x + y * width + z * width * height;
+    }
+
+    public Tile getTiles(int x, int y, int z) {
+        try {
+            return Tile.tiles[tiles[index(x, y, z)]];
+        } catch (ArrayIndexOutOfBoundsException e) {
+            return null;
         }
     }
 
