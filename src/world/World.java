@@ -27,26 +27,24 @@ public class World {
         this.scale = 1;
 
         tiles = new byte[width * height * depth];
-        worldTransform = new Matrix4f().identity();
         generator.generateNoise();
         // Fill with some test tiles
     }
 
     public void render(TileRenderer renderer, Shader shader, Camera camera, Window window) {
 
-        int posX = ((int)camera.getPosition().x + (window.getWidth()/2)) / (scale * 2);
-        int posY = ((int)camera.getPosition().y - (window.getHeight()/2)) / (scale * 2);
+        float viewWidth = 20.0f;  // Should match the value in Camera's updateProjection
+        int minX = (Math.max(0, (int)(camera.getPosition().x - viewWidth)))-7;
+        int maxX = (Math.min(width - 1, (int)(camera.getPosition().x + viewWidth)))+7;
+        int minY = (Math.max(0, (int)(camera.getPosition().y - viewWidth)))-7;
+        int maxY = (Math.min(height - 1, (int)(camera.getPosition().y + viewWidth)))+7;
 
-        // Calculate world transform
-        worldTransform.identity()
-                .scale(scale);
-
-        for (int x = 0; x < width; x++) {
-            for (int y = 0; y < height; y++) {
-                for (int z = 0; z < depth; z++) {
+        for (int x = minX; x < maxX; x++) {
+            for (int y = minY; y < maxY; y++) {
+                for (int z = 0; z < depth; z ++) {
                     Tile t = getTiles(x, y, z);
                     if (t != null) {
-                        renderer.renderTile(t, x, y, z, shader, worldTransform, camera);
+                        renderer.renderTile(t, x, y, z, shader, camera);
                     }
                 }
             }
@@ -69,10 +67,6 @@ public class World {
         if (x >= 0 && x < width && y >= 0 && y < height && z >= 0 && z < depth) {
             tiles[index(x, y, z)] = tile.getId();
         }
-    }
-
-    public Matrix4f getWorldTransform() {
-        return worldTransform;
     }
 
     public int getWidth() {

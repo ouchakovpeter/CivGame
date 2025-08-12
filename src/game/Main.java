@@ -29,7 +29,7 @@ public class Main {
         win.setSize(1280, 720);
         win.setFullscreen(false);
         win.createWindow("CivGame");
-        WorldGenerator generation = new WorldGenerator(25,25, 1);
+        WorldGenerator generation = new WorldGenerator(1000,1000, 1);
         World world = new World(generation);
         Camera camera = new Camera(win.getWidth(), win.getHeight(), world);
 
@@ -43,6 +43,8 @@ public class Main {
         // Loads OpenGL functions for Java to use.
 
         glEnable(GL_TEXTURE_2D);
+        glEnable(GL_DEPTH_TEST);
+        glDepthFunc(GL_LEQUAL);
 
         //should be part of a "world class"
         TileRenderer tiles = new TileRenderer();
@@ -96,7 +98,7 @@ public class Main {
                 }
 
                 if(can_render){
-                    glClear(GL_COLOR_BUFFER_BIT);//Clears the screen (erases whatever you drew last frame)
+                    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);//Clears the screen (erases whatever you drew last frame)
 
                     world.render(tiles, shader, camera, win);
 

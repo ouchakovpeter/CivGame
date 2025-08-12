@@ -9,8 +9,8 @@ public class Camera {
     private Vector3f forward;
     private Matrix4f projection;
     private float aspectRatio;
-    private float roll = 0.0f;
-    private float pitch = 0.0f;
+    private float roll = 0.75f;
+    private float pitch = 0.75f;
     private final World world;
 
     public Camera(int width, int height,World world) {
@@ -31,10 +31,11 @@ public class Camera {
                 viewWidth,
                 -viewHeight,
                 viewHeight,
-                -1000.0f,
-                1000.0f
+                -100,
+                100
         );
     }
+
 
     public Matrix4f getViewMatrix() {
     return new Matrix4f()
@@ -61,7 +62,14 @@ public class Camera {
     }
 
     public void addPitch(float degrees) {
+        if(this.pitch > 0.75){
+           this.pitch = 0.75f;
+        }
+        if(this.pitch < 0){
+            this.pitch = 0;
+        }
         this.pitch = this.pitch + degrees;
+        System.out.println(pitch);
     }
 
     public float getRoll() {

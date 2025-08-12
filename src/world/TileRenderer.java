@@ -48,7 +48,7 @@ public class TileRenderer {
             }
         }
     }
-    public void renderTile(Tile id, int x, int y, int z, Shader shader, Matrix4f worldTransform, Camera cam) {
+    public void renderTile(Tile id, int x, int y, int z, Shader shader, Camera cam) {
         shader.bind();
         if(tile_textures.containsKey(id.getTexture())) {
             tile_textures.get(id.getTexture()).bind(0);
@@ -57,16 +57,16 @@ public class TileRenderer {
         // Create tile's model matrix with position and scale
         // We use x+0.5f and y+0.5f to center the tile at integer coordinates
         Matrix4f tileModel = new Matrix4f()
-            .translate(x + 0.5f, y + 0.5f, z)  // Center the tile at integer coordinates
+            .translate(x + 0.5f, y + 0.5f, z * 0.5f)  // Center the tile at integer coordinates
             .scale(0.5f);                      // Scale to fit within 1 unit
 
         // Combine transformations: worldTransform * tileModel
-        Matrix4f modelMatrix = new Matrix4f(worldTransform).mul(tileModel);
+        //Matrix4f modelMatrix = new Matrix4f(worldTransform).mul(tileModel);
 
         // Calculate MVP matrix
         Matrix4f mvp = new Matrix4f(cam.getProjectionMatrix())
                 .mul(cam.getViewMatrix())
-                .mul(modelMatrix);
+                .mul(tileModel);
 
         shader.setUniform("mvp", mvp);
         model.render();

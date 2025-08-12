@@ -13,7 +13,6 @@ public class GameController {
     private float movementSpeed = 0.1f;
     private final float rotationSpeed = 0.01f;
     private final float pitchSpeed = 0.1f;
-    private float pitchAngle = 1;
 
     public GameController(Window window, Camera camera, World world) {
         this.window = window;
@@ -70,17 +69,9 @@ public class GameController {
             camera.addRoll(rotationSpeed);
         }
 
+
         if (input.getScrollY() != 0) {
-            pitchAngle += (float)input.getScrollY()*pitchSpeed;
-            if(pitchAngle > 2.2) {
-                pitchAngle = 2;
-            }
-            if(pitchAngle < -0.2) {
-                pitchAngle = 0;
-            }
-            if(pitchAngle > 0 && pitchAngle < 2) {
-                camera.addPitch(((float)input.getScrollY())*pitchSpeed);
-            }
+            camera.addPitch(((float)input.getScrollY())*pitchSpeed);
         }
     }
 }
