@@ -1,19 +1,12 @@
 package game;
 
-import static java.sql.Types.NULL;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL43C.GL_DEBUG_OUTPUT;
-import static org.lwjgl.opengl.GL43C.glDebugMessageCallback;
 
 import io.*;
-import org.lwjgl.system.MemoryUtil;
 import render.*;
 import world.*;
 
-import org.joml.Matrix4f;
-import org.joml.Vector3f;
-import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 
 

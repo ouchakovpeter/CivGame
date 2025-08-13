@@ -1,12 +1,8 @@
 package world;
 
-import org.joml.Vector2f;
-import org.joml.Vector4f;
 import render.*;
 import io.*;
-import util.*;
 import org.joml.Matrix4f;
-import org.joml.Vector3f;
 
 public class World {
     private byte[] tiles;
@@ -30,32 +26,13 @@ public class World {
         // Fill with some test tiles
     }
 
-    public void render(TileRenderer renderer, Shader shader, Camera camera, Window window) {
-
-        int minX = (Math.max(0, (int)(camera.getPosition().x - camera.getViewWidth())))-7;
-        int maxX = (Math.min(width - 1, (int)(camera.getPosition().x +  camera.getViewWidth())))+7;
-        int minY = (Math.max(0, (int)(camera.getPosition().y -  camera.getViewWidth())))-7;
-        int maxY = (Math.min(height - 1, (int)(camera.getPosition().y +  camera.getViewWidth())))+7;
-
-        for (int x = minX; x < maxX; x++) {
-            for (int y = minY; y < maxY; y++) {
-                for (int z = 0; z < depth; z ++) {
-                    Tile t = getTiles(x, y, z);
-                    if (t != null) {
-                        renderer.renderTile(t, x, y, z, shader, camera);
-                    }
-                }
-            }
-        }
-    }
-
     public void assignTile() {
-        float[][] noiseMap = generator.generateNoise();
+        float[][][] noiseMap = generator.generateNoise();
         for (int z = 0; z < depth; z++) {
             for (int y = 0; y < height; y++) {
                 for (int x = 0; x < width; x++) {
 
-                    float noiseValue = noiseMap[x][y];
+                    float noiseValue = noiseMap[x][y][z];
                     //float n = (float)Math.random();
 
                     byte tileId;
@@ -68,6 +45,28 @@ public class World {
                     }
 
                     tiles[index(x, y, z)] = tileId;
+                }
+            }
+        }
+    }
+
+    public void render(TileRenderer renderer, Shader shader, Camera camera, Window window) {
+
+        int minX = (Math.max(0, (int)(camera.getPosition().x - camera.getViewWidth())))-7;
+        int maxX = (Math.min(width - 1, (int)(camera.getPosition().x +  camera.getViewWidth())))+7;
+        int minY = (Math.max(0, (int)(camera.getPosition().y -  camera.getViewWidth())))-7;
+        int maxY = (Math.min(height - 1, (int)(camera.getPosition().y +  camera.getViewWidth())))+7;
+
+        for (int x = minX; x < maxX; x++) {
+            for (int y = minY; y < maxY; y++) {
+                for (int z = 0; z < depth; z ++) {
+                    int tileIndex = index(x, y, z);
+                    if (tileIndex >= 0 && tileIndex < tiles.length && tiles[tileIndex] != -1) {
+                        Tile t = getTiles(x, y, z);
+                        if (t != null) {
+                            renderer.renderTile(t, x, y, z, shader, camera);
+                        }
+                    }
                 }
             }
         }
