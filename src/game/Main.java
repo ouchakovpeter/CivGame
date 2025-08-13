@@ -22,7 +22,7 @@ public class Main {
         win.setSize(1280, 720);
         win.setFullscreen(false);
         win.createWindow("CivGame");
-        WorldGenerator generation = new WorldGenerator(1000,1000, 1);
+        WorldGenerator generation = new WorldGenerator(1000,1000, 6);
         World world = new World(generation);
         Camera camera = new Camera(win.getWidth(), win.getHeight(), world);
 
@@ -56,8 +56,6 @@ public class Main {
         double time = Timer.getTime();
         double unprocessed = 0;
 
-
-
         while (!win.shouldClose()) { //keeps the window open / rendering loop
 
             //System.out.println(camera.getRoll());
@@ -80,7 +78,6 @@ public class Main {
                     //world.correctCamera(camera,win);
 
                     win.update(); //checks for events for player input for example
-
 
                     //frame rate counter
                     if(frame_time >= 1.0){

@@ -57,7 +57,7 @@ public class TileRenderer {
         // Create tile's model matrix with position and scale
         // We use x+0.5f and y+0.5f to center the tile at integer coordinates
         Matrix4f tileModel = new Matrix4f()
-            .translate(x + 0.5f, y + 0.5f, z * 0.5f)  // Center the tile at integer coordinates
+            .translate(x + 0.5f, y + 0.5f, z * 0.1f)  // Center the tile at integer coordinates
             .scale(0.5f);// Scale to fit within 1 unit
 
         // Calculate MVP matrix

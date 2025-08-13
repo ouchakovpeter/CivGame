@@ -12,13 +12,13 @@ public class WorldGenerator {
     private int seed;
     private int octaves;
     private float lacunarity;
-    private float[][][] noiseData;
+    private float[][] noiseData;
 
     public WorldGenerator(int width, int height, int depth) {
         this.width = width;
         this.height = height;
         this.depth = depth;
-        this.noiseData = new float[height][width][depth];
+        this.noiseData = new float[height][width];
         this.noise = new FastNoiseLite();
         this.noise.SetNoiseType(FastNoiseLite.NoiseType.Perlin);
         this.noise.SetFractalType(FastNoiseLite.FractalType.FBm);
@@ -27,14 +27,14 @@ public class WorldGenerator {
         this.noise.SetFractalGain(0.4f);
     }
 
-    public float[][][] generateNoise(){
+    public float[][] generateNoise(){
         seed = (int)(Math.random() * 10000);
         System.out.println("seed:" + seed);
         this.noise.SetSeed(seed);
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
                 for (int z = 0; z < depth; z++)
-                noiseData[x][y][z] = noise.GetNoise(x, y, z);
+                noiseData[x][y] = noise.GetNoise(x, y);
             }
         }
         return noiseData;
