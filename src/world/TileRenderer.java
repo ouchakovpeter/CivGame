@@ -48,7 +48,7 @@ public class TileRenderer {
             }
         }
     }
-    public void renderTile(Tile id, int x, int y, int z, Shader shader, Camera cam) {
+    public void renderTile(Tile id, int x, int y, int z, Shader shader, Camera cam, float brightness) {
         shader.bind();
         if(tile_textures.containsKey(id.getTexture())) {
             tile_textures.get(id.getTexture()).bind(0);
@@ -66,6 +66,9 @@ public class TileRenderer {
                 .mul(tileModel);
 
         shader.setUniform("mvp", mvp);
+
+        shader.setUniform("u_Brightness", brightness);
+
         model.render();
     }
 }

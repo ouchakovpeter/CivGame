@@ -39,12 +39,20 @@ public class World {
                     depthValue = 2;
                 } else if (noiseValue < 0.2f) {
                     depthValue = 3;
-                } else if (noiseValue < 0.6f) {
+                } else if (noiseValue < 0.3f) {
                     depthValue = 4;
-                } else if (noiseValue < 0.7f) {
+                } else if (noiseValue < 0.4f) {
                     depthValue = 5;
-                } else {
+                } else if (noiseValue < 0.5f) {
                     depthValue = 6;
+                } else if (noiseValue < 0.6f) {
+                    depthValue = 7;
+                } else if (noiseValue < 0.65f) {
+                    depthValue = 8;
+                } else if (noiseValue < 0.7f) {
+                    depthValue = 9;
+                } else {
+                    depthValue = 10;
                 }
 
                 for (int z = 0; z < depth; z++) {
@@ -88,7 +96,9 @@ public class World {
                     if (tileIndex >= 0 && tileIndex < tiles.length && tiles[tileIndex] != -1) {
                         Tile t = getTiles(x, y, z);
                         if (t != null) {
-                            renderer.renderTile(t, x, y, z, shader, camera);
+                            boolean isLit = (z == depth - 1) || tiles[index(x, y, z + 1)] == -1;
+                            float brightness = isLit ? 1.0f : 0.5f;
+                            renderer.renderTile(t, x, y, z, shader, camera, brightness);
                         }
                     }
                 }

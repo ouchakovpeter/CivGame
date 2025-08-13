@@ -76,6 +76,13 @@ public class Shader {
         }
     }
 
+    public void setUniform(String name, float value) {
+        int location = glGetUniformLocation(program, name);
+        if (location != -1){
+            glUniform1f(location, value);
+        }
+    }
+
     //Tells OpenGL: "Use this shader for all upcoming drawings."
     public void bind(){
         glUseProgram(program);
