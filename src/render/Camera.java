@@ -12,6 +12,7 @@ public class Camera {
     private float roll = 0.75f;
     private float pitch = 0.75f;
     private final World world;
+    private float viewWidth = 20.0f;
 
     public Camera(int width, int height,World world) {
         this.world = world;
@@ -23,7 +24,6 @@ public class Camera {
     
     public void updateProjection(int width, int height) {
         this.aspectRatio = (float)width / (float)height;
-        float viewWidth = 20.0f;
         float viewHeight = viewWidth / aspectRatio;
 
         projection = new Matrix4f().ortho(
@@ -79,4 +79,6 @@ public class Camera {
     public float getPitch() {
         return pitch;
     }
+
+    public float getViewWidth(){return viewWidth;}
 }

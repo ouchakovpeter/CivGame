@@ -1,12 +1,13 @@
 package world;
 
 public class Tile {
-    public static Tile tiles[] = new Tile[16];//amount of tiles in the world
+    public static Tile tiles[] = new Tile[16];//amount of tiles types / textures
     public static byte number_of_tiles = 0;
-    public static final Tile grass = new Tile("grass"); //tile 3
-    public static final Tile grid = new Tile("grid"); //tile 0
-    public static final Tile dark_smile = new Tile("smile2"); //tile 1
-    public static final Tile light_smile = new Tile("smile"); //tile 2
+
+        //IDing the textures to a tile type
+    public static final Tile grass = new Tile("grass"); //tile 0
+    public static final Tile forest = new Tile("forest"); //tile 1
+    public static final Tile water = new Tile("water"); //tile 2
 
 
     private byte id;
