@@ -69,6 +69,10 @@ public class GameController {
             camera.addRoll(rotationSpeed);
         }
 
+        if (input.isKeyDown(GLFW_KEY_R)) {
+            world.generateWorld();
+        }
+
 
         if (input.getScrollY() != 0) {
             camera.addPitch(((float)input.getScrollY())*pitchSpeed);

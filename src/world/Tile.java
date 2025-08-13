@@ -5,9 +5,11 @@ public class Tile {
     public static byte number_of_tiles = 0;
 
         //IDing the textures to a tile type
-    public static final Tile grass = new Tile("grass"); //tile 0
-    public static final Tile forest = new Tile("forest"); //tile 1
-    public static final Tile water = new Tile("water"); //tile 2
+    public static final Tile grass = new Tile("grass");
+    public static final Tile sand = new Tile("sand");
+    public static final Tile forest = new Tile("forest");
+    public static final Tile water = new Tile("water");
+    public static final Tile stone = new Tile("stone");
 
 
     private byte id;

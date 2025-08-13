@@ -21,28 +21,34 @@ public class World {
         this.depth = generator.getDepth();
 
         tiles = new byte[width * height * depth];
-        //generator.generateNoise();
-        assignTile();
+        generateWorld();
+
         // Fill with some test tiles
     }
 
-    public void assignTile() {
+    public void generateWorld() {
         float[][][] noiseMap = generator.generateNoise();
         for (int z = 0; z < depth; z++) {
             for (int y = 0; y < height; y++) {
                 for (int x = 0; x < width; x++) {
 
                     float noiseValue = noiseMap[x][y][z];
-                    //float n = (float)Math.random();
 
                     byte tileId;
                     if (noiseValue < 0.05f) {
                         tileId = Tile.water.getId();
+                    } else if (noiseValue < 0.08f) {
+                        tileId = Tile.sand.getId();
                     } else if (noiseValue < 0.2f) {
                         tileId = Tile.grass.getId();
-                    } else {
+                    } else if (noiseValue < 0.6f) {
                         tileId = Tile.forest.getId();
+                    } else if (noiseValue < 0.7f) {
+                        tileId = Tile.stone.getId();
+                    } else {
+                        tileId = -1;
                     }
+
 
                     tiles[index(x, y, z)] = tileId;
                 }
@@ -83,12 +89,6 @@ public class World {
             return null;
         }
     }
-
-//    public void setTile(Tile tile, int x, int y, int z) {
-//        if (x >= 0 && x < width && y >= 0 && y < height && z >= 0 && z < depth) {
-//            tiles[index(x, y, z)] = tile.getId();
-//        }
-//    }
 
     public int getWidth() {
         return width;
