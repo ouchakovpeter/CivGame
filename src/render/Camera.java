@@ -10,7 +10,7 @@ public class Camera {
     private Matrix4f projection;
     private float aspectRatio;
     private float roll = 0.75f;
-    private float pitch = 0.75f;
+    private float pitch = 0.85f;
     private final World world;
     private float viewWidth = 20.0f;
 
@@ -62,13 +62,13 @@ public class Camera {
     }
 
     public void addPitch(float degrees) {
-        if(this.pitch > 0.75){
-           this.pitch = 0.75f;
+        this.pitch = this.pitch + degrees;
+        if(this.pitch > 0.85){
+           this.pitch = 0.85f;
         }
         if(this.pitch < 0){
             this.pitch = 0;
         }
-        this.pitch = this.pitch + degrees;
     }
 
     public float getRoll() {

@@ -82,7 +82,7 @@ public class World {
                     else
                     {
                         if (noiseValue < 0.05f) {
-                            tileId = Tile.water.getId();;
+                            tileId = Tile.water.getId();
                         } else if (noiseValue < 0.08f) {
                             tileId = Tile.sand.getId();
                         } else if (noiseValue < 0.15f) {
