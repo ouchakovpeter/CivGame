@@ -66,10 +66,12 @@ public class World {
                             tileId = Tile.water.getId();;
                         } else if (noiseValue < 0.08f) {
                             tileId = Tile.sand.getId();
-                        } else if (noiseValue < 0.2f) {
+                        } else if (noiseValue < 0.15f) {
                             tileId = Tile.grass.getId();
-                        } else if (noiseValue < 0.6f) {
+                        } else if (noiseValue < 0.2f) {
                             tileId = Tile.forest.getId();
+                        } else if (noiseValue < 0.6f) {
+                            tileId = Tile.deepforest.getId();
                         } else if (noiseValue < 0.7f) {
                             tileId = Tile.stone.getId();
                         } else {
@@ -80,6 +82,33 @@ public class World {
                 }
             }
         }
+    }
+
+    private boolean isTileVisible(int x, int y, int z) {
+        // Directly above empty? → visible
+        if (z == depth - 1 || tiles[index(x, y, z + 1)] == -1) {
+            return true;
+        }
+
+        // Check neighbors at same height
+        int[][] offsets = {
+                {1, 0},  // east
+                {-1, 0}, // west
+                {0, 1},  // north
+                {0, -1}  // south
+        };
+
+        for (int[] off : offsets) {
+            int nx = x + off[0];
+            int ny = y + off[1];
+            if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
+                if (tiles[index(nx, ny, z)] == -1) {
+                    return true; // neighbor gap → visible
+                }
+            }
+        }
+
+        return false; // completely surrounded
     }
 
     public void render(TileRenderer renderer, Shader shader, Camera camera, Window window) {
@@ -93,11 +122,16 @@ public class World {
             for (int y = minY; y < maxY; y++) {
                 for (int z = 0; z < depth; z ++) {
                     int tileIndex = index(x, y, z);
+
+                    if (tileIndex < 0 || tileIndex >= tiles.length || tiles[tileIndex] == -1) {
+                        continue;
+                    }
+
                     if (tileIndex >= 0 && tileIndex < tiles.length && tiles[tileIndex] != -1) {
                         Tile t = getTiles(x, y, z);
                         if (t != null) {
                             boolean isLit = (z == depth - 1) || tiles[index(x, y, z + 1)] == -1;
-                            float brightness = isLit ? 1.0f : 0.5f;
+                            float brightness = isLit ? 1.0f : 0.3f; //shadow intensity
                             renderer.renderTile(t, x, y, z, shader, camera, brightness);
                         }
                     }

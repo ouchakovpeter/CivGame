@@ -62,14 +62,13 @@ public class Camera {
     }
 
     public void addPitch(float degrees) {
-        if(this.pitch > 0.75){
-           this.pitch = 0.75f;
+        if(this.pitch > 1.75){
+           this.pitch = 1.75f;
         }
         if(this.pitch < 0){
             this.pitch = 0;
         }
         this.pitch = this.pitch + degrees;
-        System.out.println(pitch);
     }
 
     public float getRoll() {

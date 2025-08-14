@@ -8,6 +8,7 @@ public class Tile {
     public static final Tile grass = new Tile("grass");
     public static final Tile sand = new Tile("sand");
     public static final Tile forest = new Tile("forest");
+    public static final Tile deepforest = new Tile("deepforest");
     public static final Tile water = new Tile("water");
     public static final Tile stone = new Tile("stone");
 
