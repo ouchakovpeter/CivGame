@@ -1,10 +1,11 @@
 package world;
 
 import org.joml.Matrix4f;
-import org.joml.Vector3f;
+import org.lwjgl.BufferUtils;
 import render.*;
 
-import java.util.HashMap;
+import java.nio.FloatBuffer;
+import java.util.*;
 
 public class TileRenderer {
     private HashMap<String , Texture> tile_textures;
@@ -48,29 +49,102 @@ public class TileRenderer {
             }
         }
     }
-    public void renderTile(Tile id, int x, int y, int z, Shader shader, Camera cam, float brightness) {
+    public void renderBatch(World world, Shader shader, Camera cam) {
         shader.bind();
-        if(tile_textures.containsKey(id.getTexture())) {
-            tile_textures.get(id.getTexture()).bind(0);
+        
+        // Set up projection and view matrices
+        Matrix4f projection = new Matrix4f().ortho2D(-16.0f * 1.6f, 16.0f * 1.6f, -9.0f * 1.6f, 9.0f * 1.6f).scale(32);
+        shader.setUniform("projection", projection);
+        shader.setUniform("view", cam.getViewMatrix());
+
+        // Group tiles by texture
+        Map<String, List<float[]>> textureGroups = new HashMap<>();
+        
+        // First pass: group tiles by texture
+        for (int x = 0; x < world.getWidth(); x++) {
+            for (int y = 0; y < world.getHeight(); y++) {
+                for (int z = 0; z < world.getDepth(); z++) {
+                    Tile t = world.getTiles(x, y, z);
+                    if (t == null || t.getId() == -1) continue;
+
+                    // Get texture name and ensure it's loaded
+                    String texName = t.getTexture();
+                    if (!tile_textures.containsKey(texName)) {
+                        tile_textures.put(texName, new Texture(texName + ".png"));
+                    }
+
+                    // Determine brightness
+                    boolean isLit = (z == world.getDepth() - 1) || world.getTiles(x, y, z + 1) == null;
+                    float brightness = isLit ? 1.0f : 0.3f;
+
+                    // Add instance data to the appropriate texture group
+                    textureGroups.computeIfAbsent(texName, k -> new ArrayList<>())
+                               .add(new float[]{x + 0.5f, y + 0.5f, z * 0.1f, brightness});
+                }
+            }
         }
 
-        // Create tile's model matrix with position and scale
-        // We use x+0.5f and y+0.5f to center the tile at integer coordinates
-        Matrix4f tileModel = new Matrix4f()
-            .translate(x + 0.5f, y + 0.5f, z * 0.1f)  // Center the tile at integer coordinates
-            .scale(0.5f);// Scale to fit within 1 unit
+        // Second pass: render each texture group with instancing
+        for (Map.Entry<String, List<float[]>> entry : textureGroups.entrySet()) {
+            String texName = entry.getKey();
+            List<float[]> instances = entry.getValue();
+            
+            // Skip if no instances for this texture
+            if (instances.isEmpty()) continue;
+            
+            // Bind texture
+            Texture tex = tile_textures.get(texName);
+            if (tex != null) {
+                tex.bind(0);
+                shader.setUniform("tex", 0);
+            }
+            
+            // Convert instances to float array
+            float[] instanceData = new float[instances.size() * 4];
+            int idx = 0;
+            for (float[] instance : instances) {
+                System.arraycopy(instance, 0, instanceData, idx * 4, 4);
+                idx++;
+            }
+            
+            // Render instances
+            model.renderInstanced(instanceData, instances.size(), cam, shader);
+        }
+    }
+    public void renderBatch(List<TileInstance> tiles, Shader shader, Camera cam) {
+        shader.bind();
 
-        // Calculate MVP matrix
-        Matrix4f mvp = new Matrix4f(cam.getProjectionMatrix())
-                .mul(cam.getViewMatrix())
-                .mul(tileModel);
+        // Group tiles by texture
+        Map<String, List<TileInstance>> textureGroups = new HashMap<>();
+        for (TileInstance t : tiles) {
+            textureGroups.computeIfAbsent(t.texture, k -> new ArrayList<>()).add(t);
+        }
 
-        shader.setUniform("mvp", mvp);
+        for (Map.Entry<String, List<TileInstance>> entry : textureGroups.entrySet()) {
+            String textureName = entry.getKey();
+            List<TileInstance> group = entry.getValue();
+            if (group.isEmpty()) continue;
 
-        shader.setUniform("u_Brightness", brightness);
+            // Bind the texture
+            if (!tile_textures.containsKey(textureName)) {
+                tile_textures.put(textureName, new Texture(textureName + ".png"));
+            }
+            Texture tex = tile_textures.get(textureName);
+            tex.bind(0);
+            shader.setUniform("sampler", 0); // must match fragment shader uniform
 
-        model.render();
+            // Build instance buffer (x, y, z, brightness)
+            float[] instanceData = new float[group.size() * 4];
+            for (int i = 0; i < group.size(); i++) {
+                TileInstance ti = group.get(i);
+                instanceData[i * 4] = ti.x + 0.5f;
+                instanceData[i * 4 + 1] = ti.y + 0.5f;
+                instanceData[i * 4 + 2] = ti.z * 0.1f;
+                instanceData[i * 4 + 3] = ti.brightness; // ensure 0.3–1.0 range
+            }
+
+            // Render instanced
+            model.renderInstanced(instanceData, group.size(), cam, shader);
+        }
     }
 }
-
-

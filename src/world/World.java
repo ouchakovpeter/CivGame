@@ -4,6 +4,9 @@ import render.*;
 import io.*;
 import org.joml.Matrix4f;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class World {
     private byte[] tiles;
     private final WorldGenerator generator;
@@ -22,8 +25,6 @@ public class World {
 
         tiles = new byte[width * height * depth];
         generateWorld();
-
-        // Fill with some test tiles
     }
 
     public void generateWorld() {
@@ -39,20 +40,38 @@ public class World {
                     depthValue = 2;
                 } else if (noiseValue < 0.2f) {
                     depthValue = 3;
-                } else if (noiseValue < 0.3f) {
+                } else if (noiseValue < 0.25f) {
                     depthValue = 4;
-                } else if (noiseValue < 0.4f) {
+                } else if (noiseValue < 0.3f) {
                     depthValue = 5;
-                } else if (noiseValue < 0.5f) {
+                } else if (noiseValue < 0.35f) {
                     depthValue = 6;
-                } else if (noiseValue < 0.6f) {
+                } else if (noiseValue < 0.4f) {
                     depthValue = 7;
-                } else if (noiseValue < 0.65f) {
+                } else if (noiseValue < 0.45f) {
                     depthValue = 8;
-                } else if (noiseValue < 0.7f) {
+                } else if (noiseValue < 0.5f) {
                     depthValue = 9;
-                } else {
+                } else if (noiseValue < 0.55f) {
                     depthValue = 10;
+                } else if (noiseValue < 0.6f) {
+                    depthValue = 11;
+                } else if (noiseValue < 0.65f) {
+                    depthValue = 12;
+                } else if (noiseValue < 0.7f) {
+                    depthValue = 13;
+                } else if (noiseValue < 0.75f) {
+                    depthValue = 14;
+                } else if (noiseValue < 0.8f) {
+                    depthValue = 15;
+                } else if (noiseValue < 0.85f) {
+                    depthValue = 16;
+                } else if (noiseValue < 0.9f) {
+                    depthValue = 17;
+                } else if (noiseValue < 0.95f) {
+                    depthValue = 18;
+                } else {
+                    depthValue = 20;
                 }
 
                 for (int z = 0; z < depth; z++) {
@@ -75,7 +94,7 @@ public class World {
                         } else if (noiseValue < 0.7f) {
                             tileId = Tile.stone.getId();
                         } else {
-                            tileId = -1;
+                            tileId = Tile.stone.getId();;
                         }
                     }
                     tiles[index(x, y, z)] = tileId;
@@ -84,62 +103,32 @@ public class World {
         }
     }
 
-    private boolean isTileVisible(int x, int y, int z) {
-        // Directly above empty? → visible
-        if (z == depth - 1 || tiles[index(x, y, z + 1)] == -1) {
-            return true;
-        }
-
-        // Check neighbors at same height
-        int[][] offsets = {
-                {1, 0},  // east
-                {-1, 0}, // west
-                {0, 1},  // north
-                {0, -1}  // south
-        };
-
-        for (int[] off : offsets) {
-            int nx = x + off[0];
-            int ny = y + off[1];
-            if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
-                if (tiles[index(nx, ny, z)] == -1) {
-                    return true; // neighbor gap → visible
-                }
-            }
-        }
-
-        return false; // completely surrounded
-    }
-
     public void render(TileRenderer renderer, Shader shader, Camera camera, Window window) {
+        int minX = Math.max(0, (int) (camera.getPosition().x - camera.getViewWidth())) - 7;
+        int maxX = Math.min(width - 1, (int) (camera.getPosition().x + camera.getViewWidth())) + 7;
+        int minY = Math.max(0, (int) (camera.getPosition().y - camera.getViewWidth())) - 7;
+        int maxY = Math.min(height - 1, (int) (camera.getPosition().y + camera.getViewWidth())) + 7;
 
-        int minX = (Math.max(0, (int)(camera.getPosition().x - camera.getViewWidth())))-7;
-        int maxX = (Math.min(width - 1, (int)(camera.getPosition().x +  camera.getViewWidth())))+7;
-        int minY = (Math.max(0, (int)(camera.getPosition().y -  camera.getViewWidth())))-7;
-        int maxY = (Math.min(height - 1, (int)(camera.getPosition().y +  camera.getViewWidth())))+7;
+        List<TileInstance> visibleTiles = new ArrayList<>();
 
         for (int x = minX; x < maxX; x++) {
             for (int y = minY; y < maxY; y++) {
-                for (int z = 0; z < depth; z ++) {
+                for (int z = 0; z < depth; z++) {
                     int tileIndex = index(x, y, z);
+                    if (tileIndex < 0 || tileIndex >= tiles.length || tiles[tileIndex] == -1) continue;
 
-                    if (tileIndex < 0 || tileIndex >= tiles.length || tiles[tileIndex] == -1) {
-                        continue;
-                    }
-
-                    if (tileIndex >= 0 && tileIndex < tiles.length && tiles[tileIndex] != -1) {
-                        Tile t = getTiles(x, y, z);
-                        if (t != null) {
-                            boolean isLit = (z == depth - 1) || tiles[index(x, y, z + 1)] == -1;
-                            float brightness = isLit ? 1.0f : 0.3f; //shadow intensity
-                            renderer.renderTile(t, x, y, z, shader, camera, brightness);
-                        }
+                    Tile t = getTiles(x, y, z);
+                    if (t != null) {
+                        boolean isLit = (z == depth - 1) || tiles[index(x, y, z + 1)] == -1;
+                        float brightness = isLit ? 1.0f : 0.3f; // tile shading
+                        visibleTiles.add(new TileInstance(x, y, z, brightness, t.getTexture()));
                     }
                 }
             }
+        // Render all tiles via TileRenderer
+        renderer.renderBatch(visibleTiles, shader, camera);
         }
     }
-
     private int index(int x, int y, int z) {
         return x + y * width + z * width * height;
     }
@@ -158,5 +147,8 @@ public class World {
 
     public int getHeight() {
         return height;
+    }
+    public int getDepth() {
+        return depth;
     }
 }

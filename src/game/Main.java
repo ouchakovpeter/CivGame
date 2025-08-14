@@ -22,7 +22,7 @@ public class Main {
         win.setSize(1280, 720);
         win.setFullscreen(false);
         win.createWindow("CivGame");
-        WorldGenerator generation = new WorldGenerator(1000,1000, 10);
+        WorldGenerator generation = new WorldGenerator(1000,1000, 20);
         World world = new World(generation);
         Camera camera = new Camera(win.getWidth(), win.getHeight(), world);
 

@@ -80,4 +80,8 @@ public class Camera {
     }
 
     public float getViewWidth(){return viewWidth;}
+
+    public Matrix4f getProjection() {
+        return projection;
+    }
 }
