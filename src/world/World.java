@@ -1,23 +1,29 @@
 package world;
 
+import entities.billboard.base.BillboardObject;
 import render.*;
 import io.*;
+import entities.*;
+
 import org.joml.Matrix4f;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class World {
+    private List<BillboardObject> billboards = new ArrayList<>();
+    private Model quadModel;
     private byte[] tiles;
-    private final WorldGenerator generator;
+    private final NoiseGenerator generator;
     private int width;
     private int height;
     private int depth;
 
+
     // World transformation matrix
     private Matrix4f worldTransform;
 
-    public World(WorldGenerator generator) {
+    public World(NoiseGenerator generator) {
         this.generator = generator;
         this.width = generator.getWidth();
         this.height = generator.getHeight();
@@ -25,6 +31,7 @@ public class World {
 
         tiles = new byte[width * height * depth];
         generateWorld();
+        billboards.add(new BillboardObject(0, 0, 0, "tree.png", quadModel));
     }
 
     public void generateWorld() {

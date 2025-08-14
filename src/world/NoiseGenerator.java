@@ -2,7 +2,7 @@ package world;
 
 import util.*;
 
-public class WorldGenerator {
+public class NoiseGenerator {
 
     private FastNoiseLite noise;
     private World world;
@@ -14,7 +14,7 @@ public class WorldGenerator {
     private float lacunarity;
     private float[][] noiseData;
 
-    public WorldGenerator(int width, int height, int depth) {
+    public NoiseGenerator(int width, int height, int depth) {
         this.width = width;
         this.height = height;
         this.depth = depth;
