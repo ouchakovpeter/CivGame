@@ -22,6 +22,11 @@ public class Main {
         win.setSize(1280, 720);
         win.setFullscreen(false);
         win.createWindow("CivGame");
+
+        //try to understand more
+        GL.createCapabilities();//initializes LWJGL's OpenGL bindings for the current context / allows for communication to GPU and for java to use OpenGL /
+        // Loads OpenGL functions for Java to use.
+
         NoiseGenerator generation = new NoiseGenerator(1000,1000, 20);
         World world = new World(generation);
         Camera camera = new Camera(win.getWidth(), win.getHeight(), world);
@@ -30,10 +35,6 @@ public class Main {
             glViewport(0, 0, width, height);
             camera.updateProjection(width, height);
         });
-
-        //try to understand more
-        GL.createCapabilities();//initializes LWJGL's OpenGL bindings for the current context / allows for communication to GPU and for java to use OpenGL /
-        // Loads OpenGL functions for Java to use.
 
         glEnable(GL_TEXTURE_2D);
         glEnable(GL_DEPTH_TEST);

@@ -3,7 +3,6 @@ package world;
 import entities.billboard.base.BillboardObject;
 import render.*;
 import io.*;
-import entities.*;
 
 import org.joml.Matrix4f;
 
@@ -31,7 +30,8 @@ public class World {
 
         tiles = new byte[width * height * depth];
         generateWorld();
-        billboards.add(new BillboardObject(0, 0, 0, "tree.png", quadModel));
+
+        billboards.add(new BillboardObject(0, 0, 0, "spruce_tree_0.png", quadModel));
     }
 
     public void generateWorld() {
