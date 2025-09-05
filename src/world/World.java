@@ -31,7 +31,7 @@ public class World {
         tiles = new byte[width * height * depth];
         generateWorld();
 
-        billboards.add(new BillboardObject(0, 0, 0, "spruce_tree_0.png", quadModel));
+        //billboards.add(new BillboardObject(0, 0, 0, "spruce_tree_0.png", quadModel));
     }
 
     public void generateWorld() {

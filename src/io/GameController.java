@@ -11,8 +11,9 @@ public class GameController {
     private final Window window;
     private final World world;
     private float movementSpeed = 0.1f;
-    private final float rotationSpeed = 0.01f;
+    private float rotationSpeed = 0.01f;
     private final float pitchSpeed = 0.1f;
+    private int zoom = 1;
 
     public GameController(Window window, Camera camera, World world) {
         this.window = window;
@@ -20,7 +21,7 @@ public class GameController {
         this.world = world;
     }
 
-    public void update() {
+    public void update(double deltaTime) {
         Input input = window.getInput();
 
         // Close window
@@ -28,7 +29,6 @@ public class GameController {
             glfwSetWindowShouldClose(window.getWindow(), true);
         }
 
-        boolean moving = false;
         // Mouse drag to move camera
 //        if (input.isMouseButtonDown(GLFW_MOUSE_BUTTON_LEFT)) {
 //            float dx = (float) input.getDeltaX();
@@ -69,13 +69,20 @@ public class GameController {
             camera.addRoll(rotationSpeed);
         }
 
-        if (input.isKeyDown(GLFW_KEY_R)) {
+        if (input.isKeyPressed(GLFW_KEY_R)) {
             world.generateWorld();
         }
 
-
+//        if (input.getScrollY() != 0) {
+//            camera.addPitch(((float)input.getScrollY())*pitchSpeed);
+//        }
         if (input.getScrollY() != 0) {
-            camera.addPitch(((float)input.getScrollY())*pitchSpeed);
+            System.out.println(input.getScrollY());
+            zoom += (float)input.getScrollY();
+            if(zoom < 1){
+                zoom = 1;
+            }
+            camera.setZoom(zoom, window.getWidth(), window.getHeight());
         }
     }
 }

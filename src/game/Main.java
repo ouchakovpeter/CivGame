@@ -23,11 +23,13 @@ public class Main {
         win.setFullscreen(false);
         win.createWindow("CivGame");
 
+        glfwSwapInterval(0); //disable vsync
+
         //try to understand more
         GL.createCapabilities();//initializes LWJGL's OpenGL bindings for the current context / allows for communication to GPU and for java to use OpenGL /
         // Loads OpenGL functions for Java to use.
 
-        NoiseGenerator generation = new NoiseGenerator(1000,1000, 20);
+        NoiseGenerator generation = new NoiseGenerator(10,10, 20);
         World world = new World(generation);
         Camera camera = new Camera(win.getWidth(), win.getHeight(), world);
 
@@ -67,7 +69,7 @@ public class Main {
             boolean can_render = false;
 
             double time_2 = Timer.getTime();
-            double passed = time_2 - time;
+            double passed = time_2 - time; //delta time
             unprocessed += passed; //fixes unprocessed time;
 
             frame_time += passed;
@@ -78,7 +80,7 @@ public class Main {
                     unprocessed -= frame_cap;
                     can_render = true;
 
-                    controller.update();
+                    controller.update(passed);
                     //world.correctCamera(camera,win);
 
                     win.update(); //checks for events for player input for example
@@ -89,6 +91,7 @@ public class Main {
                         System.out.println("FPS:" + frames);
                         frames = 0;
                     }
+
                 }
 
                 if(can_render){

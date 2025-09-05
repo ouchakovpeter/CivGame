@@ -14,6 +14,8 @@ public class Camera {
     private final World world;
     private float viewWidth = 20.0f;
 
+    private float zoom = 1.0f;
+
     public Camera(int width, int height,World world) {
         this.world = world;
         position = new Vector3f(world.getWidth()/2, world.getHeight()/2, 0);
@@ -27,10 +29,10 @@ public class Camera {
         float viewHeight = viewWidth / aspectRatio;
 
         projection = new Matrix4f().ortho(
-                -viewWidth,
-                viewWidth,
-                -viewHeight,
-                viewHeight,
+                -viewWidth / zoom,
+                viewWidth  / zoom,
+                -viewHeight  / zoom,
+                viewHeight  / zoom,
                 -100,
                 100
         );
@@ -83,5 +85,14 @@ public class Camera {
 
     public Matrix4f getProjection() {
         return projection;
+    }
+
+    public void setZoom(float zoom, int width, int height) {
+        if (zoom < 0.1f) zoom = 0.1f; // prevent flipping
+        this.zoom = zoom;
+        updateProjection(width, height);
+    }
+    public float getZoom() {
+        return zoom;
     }
 }
