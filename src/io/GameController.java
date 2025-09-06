@@ -69,19 +69,23 @@ public class GameController {
             camera.addRoll(rotationSpeed);
         }
 
+        //generate new terrain
         if (input.isKeyPressed(GLFW_KEY_R)) {
             world.generateWorld();
         }
 
-//        if (input.getScrollY() != 0) {
-//            camera.addPitch(((float)input.getScrollY())*pitchSpeed);
-//        }
+        //reset position
+        if (input.isKeyPressed(GLFW_KEY_F)) {
+            camera.setRoll(0.75f);
+            camera.setPosition(new Vector3f(world.getWidth()/2, world.getHeight()/2, 0));
+        }
+
+
         if (input.getScrollY() != 0) {
             System.out.println(input.getScrollY());
             zoom += (float)input.getScrollY();
-            if(zoom < 1){
-                zoom = 1;
-            }
+            if(zoom < 1) zoom = 1;
+            if (zoom > 5) zoom = 5;
             camera.setZoom(zoom, window.getWidth(), window.getHeight());
         }
     }

@@ -6,10 +6,9 @@ import world.*;
 
 public class Camera {
     private Vector3f position;
-    private Vector3f forward;
     private Matrix4f projection;
     private float aspectRatio;
-    private float roll = 0.75f;
+    private float roll = 0.75f; //angle of the world
     private float pitch = 0.85f;
     private final World world;
     private float viewWidth = 20.0f;
@@ -19,7 +18,6 @@ public class Camera {
     public Camera(int width, int height,World world) {
         this.world = world;
         position = new Vector3f(world.getWidth()/2, world.getHeight()/2, 0);
-        forward = new Vector3f(0, 0, 0);
         this.aspectRatio = (float)width / (float)height;
         updateProjection(width, height);
     }
@@ -88,11 +86,18 @@ public class Camera {
     }
 
     public void setZoom(float zoom, int width, int height) {
-        if (zoom < 0.1f) zoom = 0.1f; // prevent flipping
         this.zoom = zoom;
         updateProjection(width, height);
     }
     public float getZoom() {
         return zoom;
+    }
+
+    public void setPosition(Vector3f position) {
+        this.position = position;
+    }
+
+    public void setRoll(float roll){
+        this.roll = roll;
     }
 }

@@ -12,12 +12,14 @@ public class NoiseGenerator {
     private int seed;
     private int octaves;
     private float lacunarity;
+    private float[][] noiseRaw;
     private float[][] noiseData;
 
     public NoiseGenerator(int width, int height, int depth) {
         this.width = width;
         this.height = height;
         this.depth = depth;
+        this.noiseRaw = new float[height][width];
         this.noiseData = new float[height][width];
         this.noise = new FastNoiseLite();
         this.noise.SetNoiseType(FastNoiseLite.NoiseType.Perlin);
@@ -33,8 +35,8 @@ public class NoiseGenerator {
         this.noise.SetSeed(seed);
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
-                for (int z = 0; z < depth; z++)
-                noiseData[x][y] = noise.GetNoise(x, y);
+                noiseRaw[x][y] = noise.GetNoise(x, y);
+                noiseData[x][y] = (noiseRaw[x][y] + 0.25f) / 2.0f;
             }
         }
         return noiseData;

@@ -39,7 +39,6 @@ public class World {
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
                 float noiseValue = noiseMap[x][y];
-
                 int depthValue;
                 if (noiseValue < 0.05f) {
                     depthValue = 1;;
@@ -111,10 +110,10 @@ public class World {
     }
 
     public void render(TileRenderer renderer, Shader shader, Camera camera, Window window) {
-        int minX = Math.max(0, (int) (camera.getPosition().x - camera.getViewWidth())) - 7;
-        int maxX = Math.min(width - 1, (int) (camera.getPosition().x + camera.getViewWidth())) + 7;
-        int minY = Math.max(0, (int) (camera.getPosition().y - camera.getViewWidth())) - 7;
-        int maxY = Math.min(height - 1, (int) (camera.getPosition().y + camera.getViewWidth())) + 7;
+        int minX = Math.max(0, (int) (camera.getPosition().x - camera.getViewWidth())- 7);
+        int maxX = Math.min(width - 1, (int) (camera.getPosition().x + camera.getViewWidth()) + 7);
+        int minY = Math.max(0, (int) (camera.getPosition().y - camera.getViewWidth()) - 7);
+        int maxY = Math.min(height - 1, (int) (camera.getPosition().y + camera.getViewWidth()) + 7);
 
         List<TileInstance> visibleTiles = new ArrayList<>();
 

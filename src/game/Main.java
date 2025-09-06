@@ -18,41 +18,33 @@ public class Main {
             throw new IllegalStateException("Failed to Initialize GLFW"); //error exception if GLFW doesn't load
         }
 
-        Window win = new Window();
-        win.setSize(1280, 720);
-        win.setFullscreen(false);
-        win.createWindow("CivGame");
+        Window win = new Window();//Creates a new instance of a Window object
+        win.setSize(1280, 720);//sets its size
+        win.setFullscreen(false);//Not Fullscreen
+        win.createWindow("CivGame");//creates and displays the window with the title
 
-        glfwSwapInterval(0); //disable vsync
+        glfwSwapInterval(0); //disable vsync, sets the minimum number of screen refreshes between buffer swaps, can cause screen tearing
 
-        //try to understand more
         GL.createCapabilities();//initializes LWJGL's OpenGL bindings for the current context / allows for communication to GPU and for java to use OpenGL /
         // Loads OpenGL functions for Java to use.
 
-        NoiseGenerator generation = new NoiseGenerator(10,10, 20);
-        World world = new World(generation);
+        NoiseGenerator generation = new NoiseGenerator(20,20, 20);//init noise with set settings and a set world size.
+        World world = new World(generation); //set world size, generate noise, assign depth and tile texture.
         Camera camera = new Camera(win.getWidth(), win.getHeight(), world);
+        GameController controller = new GameController(win, camera, world); //takes in the camera, window and world to control it.
+        Shader shader = new Shader("shader"); // loads and compiles shader files (shader.vs and shader.fs).
 
         glfwSetFramebufferSizeCallback(win.getWindow(), (window, width, height) -> {
             glViewport(0, 0, width, height);
             camera.updateProjection(width, height);
         });
 
-        glEnable(GL_TEXTURE_2D);
-        glEnable(GL_DEPTH_TEST);
-        glDepthFunc(GL_LEQUAL);
-
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glEnable(GL_DEPTH_TEST); //fragments (pixels) closer to the camera hide those behind them
+        glEnable(GL_BLEND);//allows transparent objects (or semi-transparent textures) to render properly
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); //Defines how blending works, (source color × alpha) + (destination color × (1 - alpha))
 
         //should be part of a "world class"
         TileRenderer tiles = new TileRenderer();
-
-        Shader shader = new Shader("shader"); // loads and compiles shader files (shader.vs and shader.fs).
-
-        // After creating the camera and world
-
-        GameController controller = new GameController(win, camera, world);
 
         double frame_cap = 1.0/120.0;
 
@@ -81,7 +73,6 @@ public class Main {
                     can_render = true;
 
                     controller.update(passed);
-                    //world.correctCamera(camera,win);
 
                     win.update(); //checks for events for player input for example
 
