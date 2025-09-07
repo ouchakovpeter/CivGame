@@ -51,7 +51,6 @@ public class FlatRenderer {
         // Set up projection and view matrices
         flatshader.setUniform("projection", cam.getProjection());
         flatshader.setUniform("view", cam.getViewMatrix());
-        //flatshader.setUniform("cameraPosition", cam.getPosition());
 
         // Group billboards by texture
         Map<String, List<FlatInstance>> textureGroups = new HashMap<>();

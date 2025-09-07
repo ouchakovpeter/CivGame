@@ -214,10 +214,20 @@ public class World {
             }
         }
         for (FlatInstance flat : flats) {
-            if (isFlatVisible(flat, camera, minX, maxX, minY, maxY)) {
-                visibleFlats.add(flat);
+            // Repeat the flat in all 9 surrounding "chunks" for wrapping
+            for (int dx = -1; dx <= 1; dx++) {
+                for (int dy = -1; dy <= 1; dy++) {
+                    float fx = flat.x + dx * width;
+                    float fy = flat.y + dy * height;
+
+                    // Only render if inside the visible camera area
+                    if (fx >= minX && fx <= maxX && fy >= minY && fy <= maxY) {
+                        visibleFlats.add(new FlatInstance(fx, fy, flat.z, flat.texture));
+                    }
+                }
             }
         }
+
         // Render all tiles via TileRenderer
         renderer.renderBatch(visibleTiles, shader, camera);
         flatRenderer.renderBatch(visibleFlats, flatShader, camera);

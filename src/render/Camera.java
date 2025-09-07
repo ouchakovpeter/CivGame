@@ -36,7 +36,6 @@ public class Camera {
         );
     }
 
-
     public Matrix4f getViewMatrix() {
     return new Matrix4f()
             .translate(-position.x, -position.y, -position.z)
@@ -46,9 +45,11 @@ public class Camera {
             .translate(-position.x, -position.y, 0);
     }
 
-    public Matrix4f getProjectionMatrix() {
-        return projection;
+    public void wrap(World world) {
+        this.position.x = (position.x % world.getWidth() + world.getWidth()) % world.getWidth();
+        this.position.y = (position.y % world.getHeight() + world.getHeight()) % world.getHeight();
     }
+
     public Vector3f getPosition() {
         return position;
     }
@@ -56,12 +57,6 @@ public class Camera {
     public Vector3f getForward() {
         Vector3f forward = new Vector3f((float)Math.cos(roll), (float)Math.sin(roll), 0);
         return forward;
-    }
-
-    public Vector3f getRight() {
-        // Right is perpendicular to forward
-        Vector3f forward = getForward();
-        return new Vector3f(-forward.y, forward.x, 0).normalize();
     }
 
     public void addRoll(float degrees) {
