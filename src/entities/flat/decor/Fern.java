@@ -2,7 +2,6 @@ package entities.flat.decor;
 
 
 import entities.flat.base.FlatInstance;
-
 import java.util.Random;
 
 public class Fern extends FlatInstance {
@@ -13,6 +12,6 @@ public class Fern extends FlatInstance {
     public static String randomTexture() {
         Random random = new Random();
         int textureIndex = random.nextInt(4);
-        return "boulder_" + textureIndex;
+        return "fern_" + textureIndex;
     }
 }

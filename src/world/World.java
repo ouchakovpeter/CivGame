@@ -1,6 +1,7 @@
 package world;
 
 import entities.flat.decor.Boulder;
+import entities.flat.decor.Fern;
 import render.*;
 import io.*;
 import entities.flat.base.*;
@@ -126,24 +127,55 @@ public class World {
                     }
                 }
                 if (topTile == Tile.grass || topTile == Tile.forest || topTile == Tile.deepforest) {
-                    // Random integer between 1 and 10
                     int decorCount = 1 + (int)(Math.random() * 10);
 
                     for (int d = 0; d < decorCount; d++) {
-                        // Random offset within the tile (kept slightly away from the exact edges)
-                        float offsetX = (float)(Math.random() * 0.8f + 0.1f);
-                        float offsetY = (float)(Math.random() * 0.8f + 0.1f);
+                        float offsetX = (float)(Math.random() * 0.9f + 0.1f);
+                        float offsetY = (float)(Math.random() * 0.9f + 0.1f);
 
                         float decorX = x + offsetX;
                         float decorY = y + offsetY;
                         float decorZ = topZ * 0.1f;
 
                         // Randomly choose decoration type
-                        int type = (int)(Math.random() * 2); // 0, 1, 2
-                        switch (type) {
-                            case 0: flats.add(new Spruce(decorX, decorY, decorZ)); break;
-                            case 1: flats.add(new Boulder(decorX, decorY, decorZ)); break;
-//                            case 2: flats.add(new Rock(decorX, decorY, decorZ)); break;
+                        // Example weights
+                        int spruceWeight = 75;
+                        int fernWeight   = 20;
+                        int boulderWeight   = 1;
+
+                        int totalWeight = spruceWeight + fernWeight + boulderWeight;
+
+                        // Pick a random number up to total weight
+                        int roll = (int)(Math.random() * totalWeight);
+
+                        if (roll < spruceWeight) {
+                            flats.add(new Spruce(decorX, decorY, decorZ));
+                        } else if (roll < spruceWeight + fernWeight) {
+                            flats.add(new Fern(decorX, decorY, decorZ));
+                        } else {
+                            flats.add(new Boulder(decorX, decorY, decorZ));
+                        }
+                    }
+                }
+                if(topTile == Tile.sand){
+                    int decorCount = 1 + (int)(Math.random() * 4);
+
+                    for (int d = 0; d < decorCount; d++) {
+                        float offsetX = (float) (Math.random() * 0.9f + 0.1f);
+                        float offsetY = (float) (Math.random() * 0.9f + 0.1f);
+
+                        float decorX = x + offsetX;
+                        float decorY = y + offsetY;
+                        float decorZ = topZ * 0.1f;
+
+                        int boulderWeight = 10;
+
+                        int totalWeight = 100;
+
+                        int roll = (int)(Math.random() * totalWeight);
+
+                        if (roll < boulderWeight) {
+                            flats.add(new Boulder(decorX, decorY, decorZ));
                         }
                     }
                 }

@@ -2,7 +2,6 @@ package entities.flat.decor;
 
 
 import entities.flat.base.FlatInstance;
-
 import java.util.Random;
 
 public class Boulder extends FlatInstance {
