@@ -57,6 +57,13 @@ public class Camera {
         Vector3f forward = new Vector3f((float)Math.cos(roll), (float)Math.sin(roll), 0);
         return forward;
     }
+
+    public Vector3f getRight() {
+        // Right is perpendicular to forward
+        Vector3f forward = getForward();
+        return new Vector3f(-forward.y, forward.x, 0).normalize();
+    }
+
     public void addRoll(float degrees) {
         this.roll = this.roll + degrees;
     }

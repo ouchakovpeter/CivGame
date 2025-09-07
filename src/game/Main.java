@@ -3,6 +3,7 @@ package game;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 
+import entities.flat.base.FlatRenderer;
 import io.*;
 import render.*;
 import world.*;
@@ -31,8 +32,14 @@ public class Main {
         NoiseGenerator generation = new NoiseGenerator(20,20, 20);//init noise with set settings and a set world size.
         World world = new World(generation); //set world size, generate noise, assign depth and tile texture.
         Camera camera = new Camera(win.getWidth(), win.getHeight(), world);
+
         GameController controller = new GameController(win, camera, world); //takes in the camera, window and world to control it.
         Shader shader = new Shader("shader"); // loads and compiles shader files (shader.vs and shader.fs).
+        Shader flatShader = new Shader("flatshader");
+        FlatRenderer flats = new FlatRenderer(camera);
+
+        //should be part of a "world class"
+        TileRenderer tiles = new TileRenderer();
 
         glfwSetFramebufferSizeCallback(win.getWindow(), (window, width, height) -> {
             glViewport(0, 0, width, height);
@@ -42,9 +49,6 @@ public class Main {
         glEnable(GL_DEPTH_TEST); //fragments (pixels) closer to the camera hide those behind them
         glEnable(GL_BLEND);//allows transparent objects (or semi-transparent textures) to render properly
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); //Defines how blending works, (source color × alpha) + (destination color × (1 - alpha))
-
-        //should be part of a "world class"
-        TileRenderer tiles = new TileRenderer();
 
         double frame_cap = 1.0/120.0;
 
@@ -88,7 +92,7 @@ public class Main {
                 if(can_render){
                     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);//Clears the screen (erases whatever you drew last frame)
 
-                    world.render(tiles, shader, camera, win);
+                    world.render(tiles, flats, shader, camera, win);
 
                     win.swapBuffers();
                     frames++;

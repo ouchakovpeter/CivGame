@@ -72,6 +72,7 @@ public class GameController {
         //generate new terrain
         if (input.isKeyPressed(GLFW_KEY_R)) {
             world.generateWorld();
+            world.generateDecoration();
         }
 
         //reset position
@@ -82,7 +83,6 @@ public class GameController {
 
 
         if (input.getScrollY() != 0) {
-            System.out.println(input.getScrollY());
             zoom += (float)input.getScrollY();
             if(zoom < 1) zoom = 1;
             if (zoom > 5) zoom = 5;

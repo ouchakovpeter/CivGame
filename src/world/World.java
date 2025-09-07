@@ -1,25 +1,27 @@
 package world;
 
-import entities.billboard.base.BillboardObject;
 import render.*;
 import io.*;
+import entities.flat.base.*;
+import entities.flat.trees.*;
 
 import org.joml.Matrix4f;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.lwjgl.opengl.GL11.glDepthMask;
+
 public class World {
-    private List<BillboardObject> billboards = new ArrayList<>();
-    private Model quadModel;
+    private List<FlatInstance> flats = new ArrayList<>();
     private byte[] tiles;
     private final NoiseGenerator generator;
     private int width;
     private int height;
     private int depth;
 
+    private float treeVariableTest = 0;
 
-    // World transformation matrix
     private Matrix4f worldTransform;
 
     public World(NoiseGenerator generator) {
@@ -30,8 +32,7 @@ public class World {
 
         tiles = new byte[width * height * depth];
         generateWorld();
-
-        //billboards.add(new BillboardObject(0, 0, 0, "spruce_tree_0.png", quadModel));
+        generateDecoration();
     }
 
     public void generateWorld() {
@@ -109,13 +110,36 @@ public class World {
         }
     }
 
-    public void render(TileRenderer renderer, Shader shader, Camera camera, Window window) {
+    //work on this
+    public void generateDecoration(){
+        flats.clear();
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                Tile topTile = null;
+                int topZ = -1;
+                for (int z = depth - 1; z >= 0; z--) {
+                    Tile t = getTiles(x, y, z);
+                    if (t != null && t != Tile.water) {
+                        topTile = t;
+                        topZ = z;
+                        break;
+                    }
+                }
+                if (topTile == Tile.grass || topTile == Tile.forest || topTile == Tile.deepforest) {
+                    flats.add(new Spruce(x + 0.5f + ((float) (Math.random() * 0.5)), y + 0.5f + ((float) (Math.random() * 0.5)), (topZ / 5) + 0.1f));
+                }
+            }
+        }
+    }
+
+    public void render(TileRenderer renderer, FlatRenderer flatRenderer, Shader shader, Camera camera, Window window) {
         int minX = Math.max(0, (int) (camera.getPosition().x - camera.getViewWidth())- 7);
         int maxX = Math.min(width - 1, (int) (camera.getPosition().x + camera.getViewWidth()) + 7);
         int minY = Math.max(0, (int) (camera.getPosition().y - camera.getViewWidth()) - 7);
         int maxY = Math.min(height - 1, (int) (camera.getPosition().y + camera.getViewWidth()) + 7);
 
         List<TileInstance> visibleTiles = new ArrayList<>();
+        List<FlatInstance> visibleFlats = new ArrayList<>();
 
         for (int x = minX; x < maxX; x++) {
             for (int y = minY; y < maxY; y++) {
@@ -131,9 +155,22 @@ public class World {
                     }
                 }
             }
+        }
+        for (FlatInstance flat : flats) {
+            if (isFlatVisible(flat, camera, minX, maxX, minY, maxY)) {
+                visibleFlats.add(flat);
+            }
+        }
+
+
         // Render all tiles via TileRenderer
         renderer.renderBatch(visibleTiles, shader, camera);
-        }
+        flatRenderer.renderBatch(visibleFlats, shader, camera);
+    }
+    private boolean isFlatVisible(FlatInstance flat, Camera camera,
+                                  int minX, int maxX, int minY, int maxY) {
+        return flat.x >= minX && flat.x <= maxX &&
+                flat.y >= minY && flat.y <= maxY;
     }
     private int index(int x, int y, int z) {
         return x + y * width + z * width * height;
