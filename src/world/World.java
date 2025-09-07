@@ -184,24 +184,30 @@ public class World {
     }
 
     public void render(TileRenderer renderer, FlatRenderer flatRenderer, Shader shader, Shader flatShader, Camera camera, Window window) {
-        int minX = Math.max(0, (int) (camera.getPosition().x - camera.getViewWidth())- 7);
-        int maxX = Math.min(width - 1, (int) (camera.getPosition().x + camera.getViewWidth()) + 7);
-        int minY = Math.max(0, (int) (camera.getPosition().y - camera.getViewWidth()) - 7);
-        int maxY = Math.min(height - 1, (int) (camera.getPosition().y + camera.getViewWidth()) + 7);
+        int minX = (int) (camera.getPosition().x - camera.getViewWidth()) - 7;
+        int maxX = (int) (camera.getPosition().x + camera.getViewWidth()) + 7;
+        int minY = (int) (camera.getPosition().y - camera.getViewWidth()) - 7;
+        int maxY = (int) (camera.getPosition().y + camera.getViewWidth()) + 7;
 
         List<TileInstance> visibleTiles = new ArrayList<>();
         List<FlatInstance> visibleFlats = new ArrayList<>();
 
         for (int x = minX; x < maxX; x++) {
             for (int y = minY; y < maxY; y++) {
-                for (int z = 0; z < depth; z++) {
-                    int tileIndex = index(x, y, z);
-                    if (tileIndex < 0 || tileIndex >= tiles.length || tiles[tileIndex] == -1) continue;
 
-                    Tile t = getTiles(x, y, z);
+                int wx = (x % width + width) % width;
+                int wy = (y % height + height) % height;
+
+                for (int z = 0; z < depth; z++) {
+                    int tileIndex = index(wx, wy, z);
+
+                    if (tiles[tileIndex] == -1) continue;
+
+                    Tile t = getTiles(wx, wy, z);
+
                     if (t != null) {
-                        boolean isLit = (z == depth - 1) || tiles[index(x, y, z + 1)] == -1;
-                        float brightness = isLit ? 1.0f : 0.3f; // tile shading
+                        boolean isLit = (z == depth - 1) || tiles[index(wx, wy, z + 1)] == -1;
+                        float brightness = isLit ? 1.0f : 0.3f;
                         visibleTiles.add(new TileInstance(x, y, z, brightness, t.getTexture()));
                     }
                 }
@@ -212,8 +218,6 @@ public class World {
                 visibleFlats.add(flat);
             }
         }
-
-
         // Render all tiles via TileRenderer
         renderer.renderBatch(visibleTiles, shader, camera);
         flatRenderer.renderBatch(visibleFlats, flatShader, camera);

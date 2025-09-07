@@ -29,7 +29,7 @@ public class Main {
         GL.createCapabilities();//initializes LWJGL's OpenGL bindings for the current context / allows for communication to GPU and for java to use OpenGL /
         // Loads OpenGL functions for Java to use.
 
-        NoiseGenerator generation = new NoiseGenerator(100,100, 20);//init noise with set settings and a set world size.
+        NoiseGenerator generation = new NoiseGenerator(10,10, 20);//init noise with set settings and a set world size.
         World world = new World(generation); //set world size, generate noise, assign depth and tile texture.
         Camera camera = new Camera(win.getWidth(), win.getHeight(), world);
 
