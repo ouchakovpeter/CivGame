@@ -1,5 +1,6 @@
 package world;
 
+import entities.flat.decor.Boulder;
 import render.*;
 import io.*;
 import entities.flat.base.*;
@@ -110,7 +111,6 @@ public class World {
         }
     }
 
-    //work on this
     public void generateDecoration(){
         flats.clear();
         for (int x = 0; x < width; x++) {
@@ -126,13 +126,32 @@ public class World {
                     }
                 }
                 if (topTile == Tile.grass || topTile == Tile.forest || topTile == Tile.deepforest) {
-                    flats.add(new Spruce(x + 0.5f + ((float) (Math.random() * 0.5)), y + 0.5f + ((float) (Math.random() * 0.5)), (topZ / 5) + 0.1f));
+                    // Random integer between 1 and 10
+                    int decorCount = 1 + (int)(Math.random() * 10);
+
+                    for (int d = 0; d < decorCount; d++) {
+                        // Random offset within the tile (kept slightly away from the exact edges)
+                        float offsetX = (float)(Math.random() * 0.8f + 0.1f);
+                        float offsetY = (float)(Math.random() * 0.8f + 0.1f);
+
+                        float decorX = x + offsetX;
+                        float decorY = y + offsetY;
+                        float decorZ = topZ * 0.1f;
+
+                        // Randomly choose decoration type
+                        int type = (int)(Math.random() * 2); // 0, 1, 2
+                        switch (type) {
+                            case 0: flats.add(new Spruce(decorX, decorY, decorZ)); break;
+                            case 1: flats.add(new Boulder(decorX, decorY, decorZ)); break;
+//                            case 2: flats.add(new Rock(decorX, decorY, decorZ)); break;
+                        }
+                    }
                 }
             }
         }
     }
 
-    public void render(TileRenderer renderer, FlatRenderer flatRenderer, Shader shader, Camera camera, Window window) {
+    public void render(TileRenderer renderer, FlatRenderer flatRenderer, Shader shader, Shader flatShader, Camera camera, Window window) {
         int minX = Math.max(0, (int) (camera.getPosition().x - camera.getViewWidth())- 7);
         int maxX = Math.min(width - 1, (int) (camera.getPosition().x + camera.getViewWidth()) + 7);
         int minY = Math.max(0, (int) (camera.getPosition().y - camera.getViewWidth()) - 7);
@@ -165,7 +184,7 @@ public class World {
 
         // Render all tiles via TileRenderer
         renderer.renderBatch(visibleTiles, shader, camera);
-        flatRenderer.renderBatch(visibleFlats, shader, camera);
+        flatRenderer.renderBatch(visibleFlats, flatShader, camera);
     }
     private boolean isFlatVisible(FlatInstance flat, Camera camera,
                                   int minX, int maxX, int minY, int maxY) {

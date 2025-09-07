@@ -49,68 +49,6 @@ public class TileRenderer {
             }
         }
     }
-    public void renderBatch(World world, Shader shader, Camera cam) {
-        shader.bind();
-        
-        // Set up projection and view matrices
-        Matrix4f projection = new Matrix4f().ortho2D(-16.0f * 1.6f, 16.0f * 1.6f, -9.0f * 1.6f, 9.0f * 1.6f).scale(32);
-        shader.setUniform("projection", projection);
-        shader.setUniform("view", cam.getViewMatrix());
-
-        // Group tiles by texture
-        Map<String, List<float[]>> textureGroups = new HashMap<>();
-        
-        // First pass: group tiles by texture
-        for (int x = 0; x < world.getWidth(); x++) {
-            for (int y = 0; y < world.getHeight(); y++) {
-                for (int z = 0; z < world.getDepth(); z++) {
-                    Tile t = world.getTiles(x, y, z);
-                    if (t == null || t.getId() == -1) continue;
-
-                    // Get texture name and ensure it's loaded
-                    String texName = t.getTexture();
-                    if (!tile_textures.containsKey(texName)) {
-                        tile_textures.put(texName, new Texture(texName + ".png"));
-                    }
-
-                    // Determine brightness
-                    boolean isLit = (z == world.getDepth() - 1) || world.getTiles(x, y, z + 1) == null;
-                    float brightness = isLit ? 1.0f : 0.3f;
-
-                    // Add instance data to the appropriate texture group
-                    textureGroups.computeIfAbsent(texName, k -> new ArrayList<>())
-                               .add(new float[]{x + 0.5f, y + 0.5f, z * 0.1f, brightness});
-                }
-            }
-        }
-
-        // Second pass: render each texture group with instancing
-        for (Map.Entry<String, List<float[]>> entry : textureGroups.entrySet()) {
-            String texName = entry.getKey();
-            List<float[]> instances = entry.getValue();
-            
-            // Skip if no instances for this texture
-            if (instances.isEmpty()) continue;
-            
-            // Bind texture
-            Texture tex = tile_textures.get(texName);
-            if (tex != null) {
-                tex.bind(0);
-                shader.setUniform("tex", 0);
-            }
-            
-            // Convert instances to float array
-            float[] instanceData = new float[instances.size() * 4];
-            int idx = 0;
-            for (float[] instance : instances) {
-                System.arraycopy(instance, 0, instanceData, idx * 4, 4);
-                idx++;
-            }
-            
-            // Render instances
-            model.renderInstanced(instanceData, instances.size(), cam, shader);
-        }
-    }
     public void renderBatch(List<TileInstance> tiles, Shader shader, Camera cam) {
         shader.bind();
 

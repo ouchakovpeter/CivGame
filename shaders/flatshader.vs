@@ -24,8 +24,8 @@ void main() {
 
     // Billboard transform
     vec3 billboardPos = worldPos
-                      + camRight * vertices.x
-                      + camUp    * vertices.z;
+                      + camRight * vertices.x * 0.5
+                      + camUp    * vertices.z * 0.5;
 
     gl_Position = projection * view * vec4(billboardPos, 1.0);
 }
