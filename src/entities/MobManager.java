@@ -2,7 +2,6 @@ package entities;
 
 import entities.flat.mob.*;
 import entities.flat.base.*;
-import org.joml.Vector3f;
 import render.*;
 import world.*;
 
@@ -18,12 +17,22 @@ public class MobManager {
     public List<Mob> getMobs() {
         return mobs;
     }
-    public void update(double deltaTime) {
+    public void update(double deltaTime, World world) {
         for (Mob mob : mobs) {
             mob.update(deltaTime);
+            adjustElevation(world);
+            wrap(world);
+
+            boolean water = world.inWater((int)mob.x, (int)mob.y, (int)mob.z);
+            mob.setInWater(water);
+
         }
     }
-
+    public void adjustElevation(World world) {
+        for (Mob mob : mobs) {
+            mob.adjustElevation(world);
+        }
+    }
     public void wrap(World world) {
         for (Mob mob : mobs) {
             mob.wrap(world);
@@ -33,6 +42,10 @@ public class MobManager {
     public void spawnHuman(Camera camera){
         Human human = new Human(camera.getPosition().x, camera.getPosition().y,0 );
         addMob(human);
+    }
+
+    public void clearMobs(){
+        mobs.clear();
     }
 
     public void render(FlatRenderer flats, Shader flatShader, Camera camera) {

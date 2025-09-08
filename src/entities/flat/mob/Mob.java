@@ -4,16 +4,20 @@ import entities.flat.base.FlatInstance;
 import world.*;
 
 public class Mob extends FlatInstance{
-    protected float vx, vy;   // velocity
+    protected boolean inWater;
+    protected boolean unlockZ = false;
 
     public Mob(float x, float y, float z, String texture) {
         super(x, y, z, texture);
     }
 
-    public void update(double deltaTime) {
-        this.x += vx * deltaTime;
-        this.y += vy * deltaTime;
-        System.out.println("Mob moved to: " + x + ", " + y + " (vx=" + vx + ", vy=" + vy + ")");
+    public void update(double deltaTime) {}
+
+    public void adjustElevation(World world){
+        if (!unlockZ) {
+            this.z = world.getElevation((int)this.x,(int)this.y)* 0.1f;
+            System.out.println(z);
+        }
     }
 
     public void wrap(World world) {
@@ -21,8 +25,12 @@ public class Mob extends FlatInstance{
         this.y = (this.y % world.getHeight() + world.getHeight()) % world.getHeight();
     }
 
-    public void setVelocity(float vx, float vy) {
-        this.vx = vx;
-        this.vy = vy;
+    public boolean inWater(World world){
+        return world.inWater((int)this.x,(int)this.y,(int)this.z);
     }
+
+    public void setInWater(boolean inWater) {
+        this.inWater = inWater;
+    }
+
 }

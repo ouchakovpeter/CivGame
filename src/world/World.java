@@ -137,8 +137,7 @@ public class World {
                         float decorY = y + offsetY;
                         float decorZ = topZ * 0.1f;
 
-                        // Randomly choose decoration type
-                        // Example weights
+                        // Randomly choose decoration type by weight
                         int spruceWeight = 75;
                         int fernWeight   = 20;
                         int boulderWeight   = 1;
@@ -235,6 +234,24 @@ public class World {
 
     private int index(int x, int y, int z) {
         return x + y * width + z * width * height;
+    }
+
+    public int getElevation(int x, int y) {
+        for (int z = depth - 1; z >= 0; z--) {
+            Tile t = getTiles(x, y, z);
+            if (t != null) {
+                return z;
+            }
+        }
+        return 0; // default if no tile found
+    }
+
+    public Boolean inWater(int x, int y, int z) {
+        Tile t = getTiles(x, y, z);
+        if(t == Tile.water){
+            return true;
+        }
+            return false;
     }
 
     public Tile getTiles(int x, int y, int z) {

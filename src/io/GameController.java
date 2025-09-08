@@ -16,6 +16,8 @@ public class GameController {
     private float movementSpeed = 0.1f;
     private float rotationSpeed = 0.01f;
     private final float pitchSpeed = 0.1f;
+
+    private float timer = 0f;
     private int zoom = 1;
 
     public GameController(Window window, Camera camera, World world, MobManager mobManager) {
@@ -77,6 +79,7 @@ public class GameController {
         if (input.isKeyPressed(GLFW_KEY_R)) {
             world.generateWorld();
             world.generateDecoration();
+            mobManager.clearMobs();
         }
 
         //reset position
