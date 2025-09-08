@@ -232,11 +232,7 @@ public class World {
         renderer.renderBatch(visibleTiles, shader, camera);
         flatRenderer.renderBatch(visibleFlats, flatShader, camera);
     }
-    private boolean isFlatVisible(FlatInstance flat, Camera camera,
-                                  int minX, int maxX, int minY, int maxY) {
-        return flat.x >= minX && flat.x <= maxX &&
-                flat.y >= minY && flat.y <= maxY;
-    }
+
     private int index(int x, int y, int z) {
         return x + y * width + z * width * height;
     }
@@ -255,8 +251,5 @@ public class World {
 
     public int getHeight() {
         return height;
-    }
-    public int getDepth() {
-        return depth;
     }
 }

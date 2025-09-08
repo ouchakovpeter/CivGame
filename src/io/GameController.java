@@ -1,5 +1,6 @@
 package io;
 
+import entities.MobManager;
 import render.*;
 import world.*;
 import org.joml.Vector3f;
@@ -10,15 +11,18 @@ public class GameController {
     private final Camera camera;
     private final Window window;
     private final World world;
+    private final MobManager mobManager;
+
     private float movementSpeed = 0.1f;
     private float rotationSpeed = 0.01f;
     private final float pitchSpeed = 0.1f;
     private int zoom = 1;
 
-    public GameController(Window window, Camera camera, World world) {
+    public GameController(Window window, Camera camera, World world, MobManager mobManager) {
         this.window = window;
         this.camera = camera;
         this.world = world;
+        this.mobManager = mobManager;
     }
 
     public void update(double deltaTime) {
@@ -29,11 +33,11 @@ public class GameController {
             glfwSetWindowShouldClose(window.getWindow(), true);
         }
 
-        // Mouse drag to move camera
+        //Mouse drag to move camera
 //        if (input.isMouseButtonDown(GLFW_MOUSE_BUTTON_LEFT)) {
 //            float dx = (float) input.getDeltaX();
 //            float dy = (float) input.getDeltaY();
-//            camera.getPosition().sub(dx*movementSpeed, -dy*movementSpeed, 0);
+//            camera.getPosition().sub(dx+movementSpeed, -dy+movementSpeed, 0);
 //        }
 
         // WASD or arrow keys can go here too // turn this into a switch
@@ -81,7 +85,12 @@ public class GameController {
             camera.setPosition(new Vector3f(world.getWidth()/2, world.getHeight()/2, 0));
         }
 
+        //spawn human
+        if (input.isKeyPressed(GLFW_KEY_G)) {
+            mobManager.spawnHuman(camera);
+        }
 
+        //zoom controls
         if (input.getScrollY() != 0) {
             zoom += (float)input.getScrollY();
             if(zoom < 1) zoom = 1;

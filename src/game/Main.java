@@ -3,13 +3,15 @@ package game;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 
+import entities.MobManager;
 import entities.flat.base.FlatRenderer;
+import entities.flat.mob.Human;
+import entities.flat.mob.Mob;
 import io.*;
 import render.*;
 import world.*;
 
 import org.lwjgl.opengl.GL;
-
 
 public class Main {
     public static void main(String[] args) {
@@ -29,16 +31,16 @@ public class Main {
         GL.createCapabilities();//initializes LWJGL's OpenGL bindings for the current context / allows for communication to GPU and for java to use OpenGL /
         // Loads OpenGL functions for Java to use.
 
-        NoiseGenerator generation = new NoiseGenerator(100,100, 20);//init noise with set settings and a set world size.
+        NoiseGenerator generation = new NoiseGenerator(20,20, 20);//init noise with set settings and a set world size.
         World world = new World(generation); //set world size, generate noise, assign depth and tile texture.
         Camera camera = new Camera(win.getWidth(), win.getHeight(), world);
+        MobManager mobManager = new MobManager();
 
-        GameController controller = new GameController(win, camera, world); //takes in the camera, window and world to control it.
+        GameController controller = new GameController(win, camera, world, mobManager); //takes in the camera, window and world to control it.
         Shader shader = new Shader("shader"); // loads and compiles shader files (shader.vs and shader.fs).
         Shader flatShader = new Shader("flatshader");
-        FlatRenderer flats = new FlatRenderer(camera);
 
-        //should be part of a "world class"
+        FlatRenderer flats = new FlatRenderer(camera);
         TileRenderer tiles = new TileRenderer();
 
         glfwSetFramebufferSizeCallback(win.getWindow(), (window, width, height) -> {
@@ -65,10 +67,10 @@ public class Main {
             boolean can_render = false;
 
             double time_2 = Timer.getTime();
-            double passed = time_2 - time; //delta time
-            unprocessed += passed; //fixes unprocessed time;
+            double deltaTime = time_2 - time; //delta time
+            unprocessed += deltaTime; //fixes unprocessed time;
 
-            frame_time += passed;
+            frame_time += deltaTime;
 
             time = time_2;
 
@@ -76,7 +78,7 @@ public class Main {
                     unprocessed -= frame_cap;
                     can_render = true;
 
-                    controller.update(passed);
+                    controller.update(deltaTime);
 
                     win.update(); //checks for events for player input for example
 
@@ -93,7 +95,12 @@ public class Main {
                     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);//Clears the screen (erases whatever you drew last frame)
 
                     camera.wrap(world);
+
+                    mobManager.update(deltaTime);
+                    mobManager.wrap(world);
+
                     world.render(tiles, flats, shader, flatShader,camera, win);
+                    mobManager.render(flats, flatShader, camera);
 
                     win.swapBuffers();
                     frames++;

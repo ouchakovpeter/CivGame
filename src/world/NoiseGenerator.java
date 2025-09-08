@@ -29,6 +29,9 @@ public class NoiseGenerator {
         this.noise.SetFractalGain(0.4f);
     }
 
+    //improve so that the generation works with wrapping
+
+    //have it take the data then take the points on the other side and interpolate them.
     public float[][] generateNoise(){
         seed = (int)(Math.random() * 10000);
         System.out.println("seed:" + seed);

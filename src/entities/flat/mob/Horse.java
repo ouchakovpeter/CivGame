@@ -1,11 +1,8 @@
 package entities.flat.mob;
 
-
-import entities.flat.base.FlatInstance;
-
 import java.util.Random;
 
-public class Horse extends FlatInstance {
+public class Horse extends Mob {
 
     public Horse(float x, float y, float z) {
         super(x, y, z, randomTexture());

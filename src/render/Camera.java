@@ -63,6 +63,7 @@ public class Camera {
         this.roll = this.roll + degrees;
     }
 
+    //I might use this
     public void addPitch(float degrees) {
         this.pitch = this.pitch + degrees;
         if(this.pitch > 0.85){
