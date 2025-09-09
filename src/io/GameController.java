@@ -77,20 +77,16 @@ public class GameController {
 
         //generate new terrain
         if (input.isKeyPressed(GLFW_KEY_R)) {
+            mobManager.clearMobs();
             world.generateWorld();
             world.generateDecoration();
-            mobManager.clearMobs();
+            mobManager.spawnHuman(world);
         }
 
         //reset position
         if (input.isKeyPressed(GLFW_KEY_F)) {
             camera.setRoll(0.75f);
             camera.setPosition(new Vector3f(world.getWidth()/2, world.getHeight()/2, 0));
-        }
-
-        //spawn human
-        if (input.isKeyPressed(GLFW_KEY_G)) {
-            mobManager.spawnHuman(camera);
         }
 
         //zoom controls

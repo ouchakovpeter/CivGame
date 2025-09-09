@@ -7,7 +7,10 @@ import java.util.Random;
 import static java.lang.Math.*;
 
 public class Human extends Mob {
-    public float speed = 0.01f;
+
+    public float speed;
+    public float walkSpeed = 0.005f;
+    public float waterSpeed = 0.001f;
     public float health = 100;
     public float direction;
 
@@ -24,6 +27,7 @@ public class Human extends Mob {
     }
 
     public void update(double deltaTime) {
+        status(health);
 
         float x = ((float) cos((PI/180)*(direction)) * speed);
         float y = ((float) sin((PI/180)*(direction)) * speed);
@@ -32,19 +36,25 @@ public class Human extends Mob {
         this.y += y;
 
         if (inWater) {
-            speed = 0.001f;
+            speed = waterSpeed;
             unlockZ = true;
-            z = -0.05f; // set manually
+            if(z > -0.1f) {
+                z -= 0.002f;
+            }
+            if(z < -0.1f){
+                kill();
+                System.out.println("Human Has Drowned");
+            }
         }
         if (!inWater) {
-            speed = 0.01f;
+            speed = walkSpeed;
             unlockZ = false;
         }
     }
 
     public void status(float health){
         if(health < 0.0f){
-            //death
+            kill();
         }
     }
 }

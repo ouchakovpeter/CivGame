@@ -64,15 +64,15 @@ public class Camera {
     }
 
     //I might use this
-    public void addPitch(float degrees) {
-        this.pitch = this.pitch + degrees;
-        if(this.pitch > 0.85){
-           this.pitch = 0.85f;
-        }
-        if(this.pitch < 0){
-            this.pitch = 0;
-        }
-    }
+//    public void addPitch(float degrees) {
+//        this.pitch = this.pitch + degrees;
+//        if(this.pitch > 0.85){
+//           this.pitch = 0.85f;
+//        }
+//        if(this.pitch < 0){
+//            this.pitch = 0;
+//        }
+//    }
 
     public float getRoll() {
         return roll;

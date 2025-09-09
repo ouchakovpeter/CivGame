@@ -20,13 +20,13 @@ public class MobManager {
     public void update(double deltaTime, World world) {
         for (Mob mob : mobs) {
             mob.update(deltaTime);
-            adjustElevation(world);
-            wrap(world);
+            mob.adjustElevation(world);
+            mob.wrap(world);
 
             boolean water = world.inWater((int)mob.x, (int)mob.y, (int)mob.z);
             mob.setInWater(water);
-
         }
+        mobs.removeIf(Mob::isDead);
     }
     public void adjustElevation(World world) {
         for (Mob mob : mobs) {
@@ -39,9 +39,15 @@ public class MobManager {
         }
     }
 
-    public void spawnHuman(Camera camera){
-        Human human = new Human(camera.getPosition().x, camera.getPosition().y,0 );
-        addMob(human);
+    public void spawnHuman(World world) {
+        for (int i = 0; i < 50; i++) {
+            Human human = new Human(
+                    (float) (Math.random() * world.getWidth()),
+                    (float) (Math.random() * world.getHeight()),
+                    0f
+            );
+            addMob(human);
+        }
     }
 
     public void clearMobs(){

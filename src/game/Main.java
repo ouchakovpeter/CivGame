@@ -43,6 +43,8 @@ public class Main {
         FlatRenderer flats = new FlatRenderer(camera);
         TileRenderer tiles = new TileRenderer();
 
+        mobManager.spawnHuman(world);
+
         glfwSetFramebufferSizeCallback(win.getWindow(), (window, width, height) -> {
             glViewport(0, 0, width, height);
             camera.updateProjection(width, height);

@@ -7,6 +7,8 @@ public class Mob extends FlatInstance{
     protected boolean inWater;
     protected boolean unlockZ = false;
 
+    protected boolean dead = false;
+
     public Mob(float x, float y, float z, String texture) {
         super(x, y, z, texture);
     }
@@ -16,7 +18,6 @@ public class Mob extends FlatInstance{
     public void adjustElevation(World world){
         if (!unlockZ) {
             this.z = world.getElevation((int)this.x,(int)this.y)* 0.1f;
-            System.out.println(z);
         }
     }
 
@@ -31,6 +32,14 @@ public class Mob extends FlatInstance{
 
     public void setInWater(boolean inWater) {
         this.inWater = inWater;
+    }
+
+    public void kill() {
+        dead = true;
+    }
+
+    public boolean isDead() {
+        return dead;
     }
 
 }
