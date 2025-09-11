@@ -40,7 +40,7 @@ public class MobManager {
     }
 
     public void spawnHuman(World world) {
-        for (int i = 0; i < 50; i++) {
+        for (int i = 0; i < world.getWidth(); i++) {
             Human human = new Human(
                     (float) (Math.random() * world.getWidth()),
                     (float) (Math.random() * world.getHeight()),

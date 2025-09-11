@@ -14,6 +14,8 @@ public class Human extends Mob {
     public float health = 100;
     public float direction;
 
+    private float actionTimer = 0f;
+
     public Human(float x, float y, float z) {
         super(x, y, z, randomTexture());
         Random rand = new Random();
@@ -34,6 +36,14 @@ public class Human extends Mob {
 
         this.x += x;
         this.y += y;
+
+        actionTimer += deltaTime;
+
+        if(actionTimer >= 2f){
+            Random rand = new Random();
+            direction += rand.nextInt(-90,90);
+            actionTimer = 0f;
+        }
 
         if (inWater) {
             speed = waterSpeed;

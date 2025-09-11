@@ -16,6 +16,10 @@ import static org.lwjgl.opengl.GL11.glDepthMask;
 
 public class World {
     private List<FlatInstance> flats = new ArrayList<>();
+    // Chunked storage for flats to keep rendering O(visible) instead of O(total)
+    private static final int CHUNK_SIZE = 64; // tiles per chunk side (tweak to taste)
+    private int chunkCols, chunkRows;
+    private List<FlatInstance>[][] flatChunks;
     private byte[] tiles;
     private final NoiseGenerator generator;
     private int width;
@@ -33,6 +37,16 @@ public class World {
         this.depth = generator.getDepth();
 
         tiles = new byte[width * height * depth];
+        // Init chunk grid
+        this.chunkCols = Math.max(1, (int)Math.ceil(width / (double)CHUNK_SIZE));
+        this.chunkRows = Math.max(1, (int)Math.ceil(height / (double)CHUNK_SIZE));
+        //noinspection unchecked
+        this.flatChunks = new ArrayList[chunkCols][chunkRows];
+        for (int cx = 0; cx < chunkCols; cx++) {
+            for (int cy = 0; cy < chunkRows; cy++) {
+                flatChunks[cx][cy] = new ArrayList<>();
+            }
+        }
         generateWorld();
         generateDecoration();
     }
@@ -112,8 +126,23 @@ public class World {
         }
     }
 
+    private void clearFlatChunks() {
+        for (int cx = 0; cx < chunkCols; cx++) {
+            for (int cy = 0; cy < chunkRows; cy++) {
+                flatChunks[cx][cy].clear();
+            }
+        }
+    }
+
+    private void addFlatToChunks(FlatInstance f) {
+        int cx = Math.floorMod((int) Math.floor(f.x), width) / CHUNK_SIZE;
+        int cy = Math.floorMod((int) Math.floor(f.y), height) / CHUNK_SIZE;
+        flatChunks[cx][cy].add(f);
+    }
+
     public void generateDecoration(){
         flats.clear();
+        clearFlatChunks();
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
                 Tile topTile = null;
@@ -148,11 +177,17 @@ public class World {
                         int roll = (int)(Math.random() * totalWeight);
 
                         if (roll < spruceWeight) {
-                            flats.add(new Spruce(decorX, decorY, decorZ));
+                            FlatInstance f = new Spruce(decorX, decorY, decorZ);
+                            flats.add(f);
+                            addFlatToChunks(f);
                         } else if (roll < spruceWeight + fernWeight) {
-                            flats.add(new Fern(decorX, decorY, decorZ));
+                            FlatInstance f = new Fern(decorX, decorY, decorZ);
+                            flats.add(f);
+                            addFlatToChunks(f);
                         } else {
-                            flats.add(new Boulder(decorX, decorY, decorZ));
+                            FlatInstance f = new Boulder(decorX, decorY, decorZ);
+                            flats.add(f);
+                            addFlatToChunks(f);
                         }
                     }
                 }
@@ -174,7 +209,9 @@ public class World {
                         int roll = (int)(Math.random() * totalWeight);
 
                         if (roll < boulderWeight) {
-                            flats.add(new Boulder(decorX, decorY, decorZ));
+                            FlatInstance f = new Boulder(decorX, decorY, decorZ);
+                            flats.add(f);
+                            addFlatToChunks(f);
                         }
                     }
                 }
@@ -183,10 +220,10 @@ public class World {
     }
 
     public void render(TileRenderer renderer, FlatRenderer flatRenderer, Shader shader, Shader flatShader, Camera camera, Window window) {
-        int minX = (int) (camera.getPosition().x - camera.getViewWidth()) - 7;
-        int maxX = (int) (camera.getPosition().x + camera.getViewWidth()) + 7;
-        int minY = (int) (camera.getPosition().y - camera.getViewWidth()) - 7;
-        int maxY = (int) (camera.getPosition().y + camera.getViewWidth()) + 7;
+        int minX = (int) (camera.getPosition().x - camera.getViewWidth()) - 8;
+        int maxX = (int) (camera.getPosition().x + camera.getViewWidth()) + 8;
+        int minY = (int) (camera.getPosition().y - camera.getViewWidth()) - 8;
+        int maxY = (int) (camera.getPosition().y + camera.getViewWidth()) + 8;
 
         List<TileInstance> visibleTiles = new ArrayList<>();
         List<FlatInstance> visibleFlats = new ArrayList<>();
@@ -197,32 +234,150 @@ public class World {
                 int wx = (x % width + width) % width;
                 int wy = (y % height + height) % height;
 
-                for (int z = 0; z < depth; z++) {
+                // Find the top-most solid tile at (wx, wy)
+                int zTop = -1;
+                Tile topTile = null;
+                for (int z = depth - 1; z >= 0; z--) {
                     int tileIndex = index(wx, wy, z);
-
                     if (tiles[tileIndex] == -1) continue;
-
                     Tile t = getTiles(wx, wy, z);
 
                     if (t != null) {
-                        boolean isLit = (z == depth - 1) || tiles[index(wx, wy, z + 1)] == -1;
-                        float brightness = isLit ? 1.0f : 0.3f;
-                        visibleTiles.add(new TileInstance(x, y, z, brightness, t.getTexture()));
+                        zTop = z;
+                        topTile = t;
+                        break;
+                    }
+                }
+
+                if(zTop != -1 && topTile != null){
+                    visibleTiles.add(new TileInstance(x, y, zTop, 1, topTile.getTexture()));
+
+                    int[][] dirs = new int[][] { {1,0}, {-1,0}, {0,1}, {0,-1} };
+                    for (int[] d : dirs) {
+                        int nx = x + d[0];
+                        int ny = y + d[1];
+                        int nwx = (nx % width + width) % width;
+                        int nwy = (ny % height + height) % height;
+                        int nTop = getElevation(nwx, nwy);
+
+                        if (nTop < zTop) {
+                            int sideDepth = zTop - nTop;
+                            for (int k = 1; k <= sideDepth; k++) {
+                                int zSide = zTop - k;
+                                if (zSide < 0) break;
+                                Tile sideTile = getTiles(wx, wy, zSide);
+                                if (sideTile == null) break;
+
+                                float tileBrightness = 0.4f;
+
+                                visibleTiles.add(new TileInstance(x, y, zSide, tileBrightness, sideTile.getTexture()));
+                            }
+                        }
                     }
                 }
             }
         }
-        for (FlatInstance flat : flats) {
-            // Repeat the flat in all 9 surrounding "chunks" for wrapping
-            for (int dx = -1; dx <= 1; dx++) {
-                for (int dy = -1; dy <= 1; dy++) {
-                    float fx = flat.x + dx * width;
-                    float fy = flat.y + dy * height;
+        // Collect flats only from chunks overlapping the camera view (with wrapping when needed)
+        boolean wrapLeft = minX < 0;
+        boolean wrapRight = maxX >= width;
+        boolean wrapDown = minY < 0;
+        boolean wrapUp = maxY >= height;
 
-                    // Only render if inside the visible camera area
-                    if (fx >= minX && fx <= maxX && fy >= minY && fy <= maxY) {
-                        visibleFlats.add(new FlatInstance(fx, fy, flat.z, flat.texture));
+        int startChunkX = Math.floorDiv(Math.max(minX, 0), CHUNK_SIZE);
+        int endChunkX = Math.floorDiv(Math.min(maxX, width - 1), CHUNK_SIZE);
+        int startChunkY = Math.floorDiv(Math.max(minY, 0), CHUNK_SIZE);
+        int endChunkY = Math.floorDiv(Math.min(maxY, height - 1), CHUNK_SIZE);
+
+        // Primary (non-wrapped) range
+        for (int cx = startChunkX; cx <= endChunkX; cx++) {
+            for (int cy = startChunkY; cy <= endChunkY; cy++) {
+                for (FlatInstance f : flatChunks[cx][cy]) {
+                    if (f.x >= minX && f.x <= maxX && f.y >= minY && f.y <= maxY) {
+                        visibleFlats.add(f);
                     }
+                }
+            }
+        }
+        // Horizontal wrap range
+        if (wrapLeft) {
+            int cx = chunkCols - 1;
+            for (int cy = startChunkY; cy <= endChunkY; cy++) {
+                for (FlatInstance f : flatChunks[cx][cy]) {
+                    float fx = f.x - width;
+                    if (fx >= minX && fx <= maxX && f.y >= minY && f.y <= maxY) {
+                        visibleFlats.add(new FlatInstance(fx, f.y, f.z, f.texture));
+                    }
+                }
+            }
+        }
+        if (wrapRight) {
+            int cx = 0;
+            for (int cy = startChunkY; cy <= endChunkY; cy++) {
+                for (FlatInstance f : flatChunks[cx][cy]) {
+                    float fx = f.x + width;
+                    if (fx >= minX && fx <= maxX && f.y >= minY && f.y <= maxY) {
+                        visibleFlats.add(new FlatInstance(fx, f.y, f.z, f.texture));
+                    }
+                }
+            }
+        }
+        // Vertical wrap range
+        if (wrapDown) {
+            int cy = chunkRows - 1;
+            for (int cx = startChunkX; cx <= endChunkX; cx++) {
+                for (FlatInstance f : flatChunks[cx][cy]) {
+                    float fy = f.y - height;
+                    if (f.x >= minX && f.x <= maxX && fy >= minY && fy <= maxY) {
+                        visibleFlats.add(new FlatInstance(f.x, fy, f.z, f.texture));
+                    }
+                }
+            }
+        }
+        if (wrapUp) {
+            int cy = 0;
+            for (int cx = startChunkX; cx <= endChunkX; cx++) {
+                for (FlatInstance f : flatChunks[cx][cy]) {
+                    float fy = f.y + height;
+                    if (f.x >= minX && f.x <= maxX && fy >= minY && fy <= maxY) {
+                        visibleFlats.add(new FlatInstance(f.x, fy, f.z, f.texture));
+                    }
+                }
+            }
+        }
+        // Corner wraps (if both axes wrap)
+        if (wrapLeft && wrapDown) {
+            int cx = chunkCols - 1, cy = chunkRows - 1;
+            for (FlatInstance f : flatChunks[cx][cy]) {
+                float fx = f.x - width, fy = f.y - height;
+                if (fx >= minX && fx <= maxX && fy >= minY && fy <= maxY) {
+                    visibleFlats.add(new FlatInstance(fx, fy, f.z, f.texture));
+                }
+            }
+        }
+        if (wrapLeft && wrapUp) {
+            int cx = chunkCols - 1, cy = 0;
+            for (FlatInstance f : flatChunks[cx][cy]) {
+                float fx = f.x - width, fy = f.y + height;
+                if (fx >= minX && fx <= maxX && fy >= minY && fy <= maxY) {
+                    visibleFlats.add(new FlatInstance(fx, fy, f.z, f.texture));
+                }
+            }
+        }
+        if (wrapRight && wrapDown) {
+            int cx = 0, cy = chunkRows - 1;
+            for (FlatInstance f : flatChunks[cx][cy]) {
+                float fx = f.x + width, fy = f.y - height;
+                if (fx >= minX && fx <= maxX && fy >= minY && fy <= maxY) {
+                    visibleFlats.add(new FlatInstance(fx, fy, f.z, f.texture));
+                }
+            }
+        }
+        if (wrapRight && wrapUp) {
+            int cx = 0, cy = 0;
+            for (FlatInstance f : flatChunks[cx][cy]) {
+                float fx = f.x + width, fy = f.y + height;
+                if (fx >= minX && fx <= maxX && fy >= minY && fy <= maxY) {
+                    visibleFlats.add(new FlatInstance(fx, fy, f.z, f.texture));
                 }
             }
         }
