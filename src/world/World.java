@@ -47,6 +47,7 @@ public class World {
                 flatChunks[cx][cy] = new ArrayList<>();
             }
         }
+
         generateWorld();
         generateDecoration();
     }

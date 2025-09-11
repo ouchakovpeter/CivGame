@@ -5,8 +5,6 @@ import static org.lwjgl.opengl.GL11.*;
 
 import entities.MobManager;
 import entities.flat.base.FlatRenderer;
-import entities.flat.mob.Human;
-import entities.flat.mob.Mob;
 import io.*;
 import render.*;
 import world.*;

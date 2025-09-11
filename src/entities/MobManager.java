@@ -40,12 +40,16 @@ public class MobManager {
     }
 
     public void spawnHuman(World world) {
-        for (int i = 0; i < world.getWidth(); i++) {
-            Human human = new Human(
-                    (float) (Math.random() * world.getWidth()),
-                    (float) (Math.random() * world.getHeight()),
-                    0f
-            );
+        for (int i = 0; i < world.getWidth() * 5; i++) {
+            float x, y;
+
+            do {
+                x = (float) (Math.random() * world.getWidth());
+                y = (float) (Math.random() * world.getHeight());
+            }
+            while (world.inWater((int)x,(int)y,0)); //keeps running until the tile selected is not water
+
+            Human human = new Human(x, y, 0);
             addMob(human);
         }
     }

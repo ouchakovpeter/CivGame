@@ -13,13 +13,14 @@ public class Human extends Mob {
     public float waterSpeed = 0.001f;
     public float health = 100;
     public float direction;
-
     private float actionTimer = 0f;
+    public HumanState state;
 
     public Human(float x, float y, float z) {
         super(x, y, z, randomTexture());
         Random rand = new Random();
         direction = rand.nextInt(361);
+        this.state = HumanState.WANDERING;
     }
 
     public static String randomTexture() {
@@ -28,16 +29,37 @@ public class Human extends Mob {
         return "human_" + textureIndex;
     }
 
+    public enum HumanState {
+        WANDERING,
+        FORAGING,
+        BUILDING,
+        SOCIALIZING,
+    }
+
     public void update(double deltaTime) {
+
         status(health);
 
-        float x = ((float) cos((PI/180)*(direction)) * speed);
-        float y = ((float) sin((PI/180)*(direction)) * speed);
+        switch (state) {
+            case WANDERING -> {
+                float x = ((float) cos((PI / 180) * (direction)) * speed);
+                float y = ((float) sin((PI / 180) * (direction)) * speed);
 
-        this.x += x;
-        this.y += y;
+                this.x += x;
+                this.y += y;
 
-        actionTimer += deltaTime;
+                actionTimer += deltaTime;
+            }
+            case FORAGING -> {
+
+            }
+            case BUILDING -> {
+
+            }
+            case SOCIALIZING -> {
+
+            }
+        }
 
         if(actionTimer >= 2f){
             Random rand = new Random();
