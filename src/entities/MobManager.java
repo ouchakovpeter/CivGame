@@ -54,13 +54,97 @@ public class MobManager {
         mobs.clear();
     }
 
-    public void render(FlatRenderer flats, Shader flatShader, Camera camera) {
+    public void render(FlatRenderer flats, Shader flatShader, Camera camera, World world) {
         if (mobs.isEmpty()) return;
 
-        // Collect all mobs as FlatInstances
+        // Camera view bounds (slightly padded like World.render)
+        int minX = (int) (camera.getPosition().x - camera.getViewWidth()) - 8;
+        int maxX = (int) (camera.getPosition().x + camera.getViewWidth()) + 8;
+        int minY = (int) (camera.getPosition().y - camera.getViewWidth()) - 8;
+        int maxY = (int) (camera.getPosition().y + camera.getViewWidth()) + 8;
+
+        int width = world.getWidth();
+        int height = world.getHeight();
+
+        boolean wrapLeft = minX < 0;
+        boolean wrapRight = maxX >= width;
+        boolean wrapDown = minY < 0;
+        boolean wrapUp = maxY >= height;
+
         List<FlatInstance> mobInstances = new ArrayList<>();
-        for (Mob mob : mobs) {
-            mobInstances.add(mob); // Mob extends FlatInstance, so this works directly
+
+        // Center world
+        for (Mob m : mobs) {
+            if (m.x >= minX && m.x <= maxX && m.y >= minY && m.y <= maxY) {
+                mobInstances.add(m);
+            }
+        }
+        // Horizontal wraps
+        if (wrapLeft) {
+            for (Mob m : mobs) {
+                float fx = m.x - width;
+                if (fx >= minX && fx <= maxX && m.y >= minY && m.y <= maxY) {
+                    mobInstances.add(new FlatInstance(fx, m.y, m.z, m.texture));
+                }
+            }
+        }
+        if (wrapRight) {
+            for (Mob m : mobs) {
+                float fx = m.x + width;
+                if (fx >= minX && fx <= maxX && m.y >= minY && m.y <= maxY) {
+                    mobInstances.add(new FlatInstance(fx, m.y, m.z, m.texture));
+                }
+            }
+        }
+        // Vertical wraps
+        if (wrapDown) {
+            for (Mob m : mobs) {
+                float fy = m.y - height;
+                if (m.x >= minX && m.x <= maxX && fy >= minY && fy <= maxY) {
+                    mobInstances.add(new FlatInstance(m.x, fy, m.z, m.texture));
+                }
+            }
+        }
+        if (wrapUp) {
+            for (Mob m : mobs) {
+                float fy = m.y + height;
+                if (m.x >= minX && m.x <= maxX && fy >= minY && fy <= maxY) {
+                    mobInstances.add(new FlatInstance(m.x, fy, m.z, m.texture));
+                }
+            }
+        }
+        // Corner wraps
+        if (wrapLeft && wrapDown) {
+            for (Mob m : mobs) {
+                float fx = m.x - width, fy = m.y - height;
+                if (fx >= minX && fx <= maxX && fy >= minY && fy <= maxY) {
+                    mobInstances.add(new FlatInstance(fx, fy, m.z, m.texture));
+                }
+            }
+        }
+        if (wrapLeft && wrapUp) {
+            for (Mob m : mobs) {
+                float fx = m.x - width, fy = m.y + height;
+                if (fx >= minX && fx <= maxX && fy >= minY && fy <= maxY) {
+                    mobInstances.add(new FlatInstance(fx, fy, m.z, m.texture));
+                }
+            }
+        }
+        if (wrapRight && wrapDown) {
+            for (Mob m : mobs) {
+                float fx = m.x + width, fy = m.y - height;
+                if (fx >= minX && fx <= maxX && fy >= minY && fy <= maxY) {
+                    mobInstances.add(new FlatInstance(fx, fy, m.z, m.texture));
+                }
+            }
+        }
+        if (wrapRight && wrapUp) {
+            for (Mob m : mobs) {
+                float fx = m.x + width, fy = m.y + height;
+                if (fx >= minX && fx <= maxX && fy >= minY && fy <= maxY) {
+                    mobInstances.add(new FlatInstance(fx, fy, m.z, m.texture));
+                }
+            }
         }
 
         // Render them in a batch
