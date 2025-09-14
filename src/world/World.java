@@ -12,8 +12,6 @@ import org.joml.Matrix4f;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.lwjgl.opengl.GL11.glDepthMask;
-
 public class World {
     private List<FlatInstance> flats = new ArrayList<>();
     // Chunked storage for flats to keep rendering O(visible) instead of O(total)
@@ -149,7 +147,7 @@ public class World {
                 Tile topTile = null;
                 int topZ = -1;
                 for (int z = depth - 1; z >= 0; z--) {
-                    Tile t = getTiles(x, y, z);
+                    Tile t = getTile(x, y, z);
                     if (t != null && t != Tile.water) {
                         topTile = t;
                         topZ = z;
@@ -241,7 +239,7 @@ public class World {
                 for (int z = depth - 1; z >= 0; z--) {
                     int tileIndex = index(wx, wy, z);
                     if (tiles[tileIndex] == -1) continue;
-                    Tile t = getTiles(wx, wy, z);
+                    Tile t = getTile(wx, wy, z);
 
                     if (t != null) {
                         zTop = z;
@@ -253,26 +251,30 @@ public class World {
                 if(zTop != -1 && topTile != null){
                     visibleTiles.add(new TileInstance(x, y, zTop, 1, topTile.getTexture()));
 
-                    int[][] dirs = new int[][] { {1,0}, {-1,0}, {0,1}, {0,-1} };
-                    for (int[] d : dirs) {
+                    // 8-neighbor (including diagonals): fill down to the lowest neighbor top to avoid black corners
+                    int[][] dirs8 = new int[][] {
+                            {-1,-1}, {-1,0}, {-1,1},
+                            { 0,-1},         { 0,1},
+                            { 1,-1}, { 1,0}, { 1,1}
+                    };
+                    int minNeighborTop = zTop;
+                    for (int[] d : dirs8) {
                         int nx = x + d[0];
                         int ny = y + d[1];
                         int nwx = (nx % width + width) % width;
                         int nwy = (ny % height + height) % height;
                         int nTop = getElevation(nwx, nwy);
-
-                        if (nTop < zTop) {
-                            int sideDepth = zTop - nTop;
-                            for (int k = 1; k <= sideDepth; k++) {
-                                int zSide = zTop - k;
-                                if (zSide < 0) break;
-                                Tile sideTile = getTiles(wx, wy, zSide);
-                                if (sideTile == null) break;
-
-                                float tileBrightness = 0.4f;
-
-                                visibleTiles.add(new TileInstance(x, y, zSide, tileBrightness, sideTile.getTexture()));
-                            }
+                        if (nTop < minNeighborTop) minNeighborTop = nTop;
+                    }
+                    if (minNeighborTop < zTop) {
+                        int sideDepth = zTop - minNeighborTop;
+                        for (int k = 1; k <= sideDepth; k++) {
+                            int zSide = zTop - k;
+                            if (zSide < 0) break;
+                            Tile sideTile = getTile(wx, wy, zSide);
+                            if (sideTile == null) break;
+                            float tileBrightness = 0.4f;
+                            visibleTiles.add(new TileInstance(x, y, zSide, tileBrightness, sideTile.getTexture()));
                         }
                     }
                 }
@@ -394,7 +396,7 @@ public class World {
 
     public int getElevation(int x, int y) {
         for (int z = depth - 1; z >= 0; z--) {
-            Tile t = getTiles(x, y, z);
+            Tile t = getTile(x, y, z);
             if (t != null) {
                 return z;
             }
@@ -403,14 +405,14 @@ public class World {
     }
 
     public Boolean inWater(int x, int y, int z) {
-        Tile t = getTiles(x, y, z);
+        Tile t = getTile(x, y, z);
         if(t == Tile.water){
             return true;
         }
             return false;
     }
 
-    public Tile getTiles(int x, int y, int z) {
+    public Tile getTile(int x, int y, int z) {
         try {
             return Tile.tiles[tiles[index(x, y, z)]];
         } catch (ArrayIndexOutOfBoundsException e) {

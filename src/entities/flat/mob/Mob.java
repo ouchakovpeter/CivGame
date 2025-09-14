@@ -3,11 +3,20 @@ package entities.flat.mob;
 import entities.flat.base.FlatInstance;
 import world.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import static java.lang.Math.*;
+import static java.lang.Math.PI;
+
 public class Mob extends FlatInstance{
     protected boolean inWater;
-    protected boolean unlockZ = false;
-
+    protected boolean unlockZ = false; //if z should change or not
     protected boolean dead = false;
+    public float direction;
+    public float speed;
+    public float health;
+    public float viewDistance;
 
     public Mob(float x, float y, float z, String texture) {
         super(x, y, z, texture);
@@ -26,8 +35,64 @@ public class Mob extends FlatInstance{
         this.y = (this.y % world.getHeight() + world.getHeight()) % world.getHeight();
     }
 
+    // Returns the first tile ahead (legacy convenience)
+    public Tile detectTile(World world){
+        List<Tile> tiles = detectTiles(world);
+        return tiles.isEmpty() ? null : tiles.get(0);
+    }
+
+    // New: returns all tiles along the look direction up to viewDistance (1 tile increments)
+    public List<Tile> detectTiles(World world){
+        List<Tile> tiles = new ArrayList<>();
+        int steps = (int) ceil(max(0f, viewDistance));
+        double rad = (PI / 180.0) * direction;
+        double cx = cos(rad);
+        double cy = sin(rad);
+
+        for (int i = 1; i <= steps; i++) {
+            int tx = Math.floorMod((int) Math.round(this.x + cx * i), world.getWidth());
+            int ty = Math.floorMod((int) Math.round(this.y + cy * i), world.getHeight());
+            int tz = world.getElevation(tx, ty);
+            Tile t = world.getTile(tx, ty, tz);
+            if (t != null) {
+                tiles.add(t);
+            }
+        }
+        return tiles;
+    }
+
+    // Optional helper if you specifically want an array
+    public Tile[] detectTilesArray(World world){
+        List<Tile> list = detectTiles(world);
+        return list.toArray(new Tile[0]);
+    }
+
+    public boolean waterAhead(World world){
+        for (Tile t : detectTiles(world)) {
+            if (t == Tile.water) return true;
+        }
+        return false;
+    }
+
+    public void avoidWater(World world){
+        int tries = 0;
+
+        while (waterAhead(world) && tries < 360) {
+            direction += 20f;
+            if (direction >= 360) {
+                direction -= 360;
+            }
+            tries++;
+        }
+
+        if(tries >= 360){
+            speed = 0f;
+        }
+    }
+
     public boolean inWater(World world){
-        return world.inWater((int)this.x,(int)this.y,(int)this.z);
+        int ez = world.getElevation((int)this.x, (int)this.y);
+        return world.inWater((int)this.x,(int)this.y, ez);
     }
 
     public void setInWater(boolean inWater) {
@@ -42,4 +107,9 @@ public class Mob extends FlatInstance{
         return dead;
     }
 
+    public void target(float targetPosX, float targetPosY){
+        float dx = targetPosX - x;
+        float dy = targetPosY - y;
+        direction = (float) Math.toDegrees(Math.atan2(dy, dx));
+    }
 }

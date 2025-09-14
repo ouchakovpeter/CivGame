@@ -2,11 +2,13 @@ package entities;
 
 import entities.flat.mob.*;
 import entities.flat.base.*;
+import entities.flat.mob.human.Human;
 import render.*;
 import world.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class MobManager {
     private List<Mob> mobs = new ArrayList<>();
@@ -23,20 +25,14 @@ public class MobManager {
             mob.adjustElevation(world);
             mob.wrap(world);
 
-            boolean water = world.inWater((int)mob.x, (int)mob.y, (int)mob.z);
+            mob.detectTile(world);
+
+            mob.avoidWater(world);
+
+            boolean water = mob.inWater(world);
             mob.setInWater(water);
         }
         mobs.removeIf(Mob::isDead);
-    }
-    public void adjustElevation(World world) {
-        for (Mob mob : mobs) {
-            mob.adjustElevation(world);
-        }
-    }
-    public void wrap(World world) {
-        for (Mob mob : mobs) {
-            mob.wrap(world);
-        }
     }
 
     public void spawnHuman(World world) {
@@ -47,9 +43,9 @@ public class MobManager {
                 x = (float) (Math.random() * world.getWidth());
                 y = (float) (Math.random() * world.getHeight());
             }
-            while (world.inWater((int)x,(int)y,0)); //keeps running until the tile selected is not water
+            while (world.inWater((int)x,(int)y, world.getElevation((int)x, (int)y))); //keeps running until the tile selected is not water
 
-            Human human = new Human(x, y, 0);
+            Human human = new Human(x, y, 0, new Random());
             addMob(human);
         }
     }

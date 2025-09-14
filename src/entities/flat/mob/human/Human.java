@@ -1,5 +1,7 @@
-package entities.flat.mob;
+package entities.flat.mob.human;
 
+import entities.flat.mob.Mob;
+import world.Tile;
 import world.World;
 
 import java.util.Random;
@@ -7,25 +9,24 @@ import java.util.Random;
 import static java.lang.Math.*;
 
 public class Human extends Mob {
-
-    public float speed;
+    public String name;
+    public Personality personality;
     public float walkSpeed = 0.005f;
     public float waterSpeed = 0.001f;
-    public float health = 100;
-    public float direction;
     private float actionTimer = 0f;
     public HumanState state;
 
-    public Human(float x, float y, float z) {
-        super(x, y, z, randomTexture());
-        Random rand = new Random();
+    public Human(float x, float y, float z, Random rand) {
+        super(x, y, z, randomTexture(rand));
+        this.personality = new Personality(rand);
         direction = rand.nextInt(361);
         this.state = HumanState.WANDERING;
+        this.health = 100;
+        this.viewDistance = 2f;//2 tiles ahead
     }
 
-    public static String randomTexture() {
-        Random random = new Random();
-        int textureIndex = random.nextInt(1);
+    public static String randomTexture(Random rand) {
+        int textureIndex = rand.nextInt(1);
         return "human_" + textureIndex;
     }
 
@@ -49,6 +50,13 @@ public class Human extends Mob {
                 this.y += y;
 
                 actionTimer += deltaTime;
+
+
+//                if(actionTimer >= 2f){
+//                    Random rand = new Random();
+//                    direction += rand.nextInt(-90,90);
+//                        actionTimer = 0f;
+//                }
             }
             case FORAGING -> {
 
@@ -59,12 +67,6 @@ public class Human extends Mob {
             case SOCIALIZING -> {
 
             }
-        }
-
-        if(actionTimer >= 2f){
-            Random rand = new Random();
-            direction += rand.nextInt(-90,90);
-            actionTimer = 0f;
         }
 
         if (inWater) {
