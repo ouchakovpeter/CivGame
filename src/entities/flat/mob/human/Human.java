@@ -51,7 +51,6 @@ public class Human extends Mob {
 
                 actionTimer += deltaTime;
 
-
 //                if(actionTimer >= 2f){
 //                    Random rand = new Random();
 //                    direction += rand.nextInt(-90,90);

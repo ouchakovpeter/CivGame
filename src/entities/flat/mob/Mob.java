@@ -61,35 +61,6 @@ public class Mob extends FlatInstance{
         return tiles;
     }
 
-    // Optional helper if you specifically want an array
-    public Tile[] detectTilesArray(World world){
-        List<Tile> list = detectTiles(world);
-        return list.toArray(new Tile[0]);
-    }
-
-    public boolean waterAhead(World world){
-        for (Tile t : detectTiles(world)) {
-            if (t == Tile.water) return true;
-        }
-        return false;
-    }
-
-    public void avoidWater(World world){
-        int tries = 0;
-
-        while (waterAhead(world) && tries < 360) {
-            direction += 20f;
-            if (direction >= 360) {
-                direction -= 360;
-            }
-            tries++;
-        }
-
-        if(tries >= 360){
-            speed = 0f;
-        }
-    }
-
     public boolean inWater(World world){
         int ez = world.getElevation((int)this.x, (int)this.y);
         return world.inWater((int)this.x,(int)this.y, ez);

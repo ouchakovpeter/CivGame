@@ -25,10 +25,6 @@ public class MobManager {
             mob.adjustElevation(world);
             mob.wrap(world);
 
-            mob.detectTile(world);
-
-            mob.avoidWater(world);
-
             boolean water = mob.inWater(world);
             mob.setInWater(water);
         }
