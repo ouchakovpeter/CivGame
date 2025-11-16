@@ -20,6 +20,7 @@ public class World {
     private List<FlatInstance>[][] flatChunks;
     private byte[] tiles;
     private byte pathDamage[][][][];
+    private boolean pathPixel[][][][];
 
     private final NoiseGenerator generator;
     private int width;
@@ -36,6 +37,7 @@ public class World {
 
         tiles = new byte[width * height * depth];
         pathDamage = new byte[width][height][16][16]; // width/height
+        pathPixel = new boolean[width][height][16][16];
 
         // Init chunk grid
         this.chunkCols = Math.max(1, (int)Math.ceil(width / (double)CHUNK_SIZE));
@@ -251,6 +253,9 @@ public class World {
                 }
 
                 if(zTop != -1 && topTile != null){
+
+                    //run in render.
+
                     visibleTiles.add(new TileInstance(x, y, zTop, 1, topTile.getTexture()));
 
                     // 8-neighbor (including diagonals): fill down to the lowest neighbor top to avoid black corners
@@ -275,7 +280,7 @@ public class World {
                             if (zSide < 0) break;
                             Tile sideTile = getTile(wx, wy, zSide);
                             if (sideTile == null) break;
-                            float tileBrightness = 0.4f;
+                            float tileBrightness = 0.3f; //brightness of underlayer
                             visibleTiles.add(new TileInstance(x, y, zSide, tileBrightness, sideTile.getTexture()));
                         }
                     }
@@ -430,6 +435,13 @@ public class World {
         pathDamage[tileX][tileY][pixelX][pixelY] = value;
     }
 
+    public boolean getPathPixel(int tileX, int tileY, int pixelX, int pixelY) {
+        return pathPixel[tileX][tileY][pixelX][pixelY];
+    }
+
+    public void setPathPixel(int tileX, int tileY, int pixelX, int pixelY, boolean value) {
+        pathPixel[tileX][tileY][pixelX][pixelY] = value;
+    }
 
     public int getWidth() {
         return width;

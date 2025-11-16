@@ -57,29 +57,34 @@ public class Mob extends FlatInstance{
 
     //Update Path
     public void updatePath(World world) {
+        if(!inWater) {
+            int tileX = ((int) this.x);
+            int tileY = ((int) this.y);
 
-        int tileX = ((int) this.x);
-        int tileY = ((int) this.y);
-        //pixel pos
-        float xFrac = this.x - tileX;
-        float yFrac = this.y - tileY;
-        int pixelX = (int) (xFrac * 16.0f);
-        int pixelY = (int) (yFrac * 16.0f);
-        if (pixelX < 0) pixelX = 0; else if (pixelX > 15) pixelX = 15;
-        if (pixelY < 0) pixelY = 0; else if (pixelY > 15) pixelY = 15;
+            //pixel pos
+            float xFrac = this.x - tileX;
+            float yFrac = this.y - tileY;
 
+            int pixelX = (int) (xFrac * 16.0f);
+            int pixelY = (int) (yFrac * 16.0f);
 
-        byte damage = world.getPathDamage(tileX,tileY,pixelX,pixelY);
+            if (pixelX < 0) pixelX = 0;
+            else if (pixelX > 15) pixelX = 15;
 
-        int damageMax = 1;
+            if (pixelY < 0) pixelY = 0;
+            else if (pixelY > 15) pixelY = 15;
 
-        //increment damage until specified
-        if (damage < damageMax) {
-            damage++;
-            world.setPathDamage(tileX,tileY,pixelX,pixelY,damage);
-        }
-        else {
-            //damage boolean
+            byte damage = world.getPathDamage(tileX, tileY, pixelX, pixelY);
+
+            int damageMax = 1;
+
+            //increment damage until specified
+            if (damage < damageMax) {
+                damage++;
+                world.setPathDamage(tileX, tileY, pixelX, pixelY, damage);
+            } else {
+                world.setPathPixel(tileX, tileY, pixelX, pixelY, true);
+            }
         }
     }
 
