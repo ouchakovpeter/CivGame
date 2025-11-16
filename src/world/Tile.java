@@ -12,7 +12,6 @@ public class Tile {
     public static final Tile water = new Tile("water");
     public static final Tile stone = new Tile("stone");
 
-
     private byte id;
     private String texture;
 

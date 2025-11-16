@@ -27,6 +27,10 @@ public class MobManager {
 
             boolean water = mob.inWater(world);
             mob.setInWater(water);
+
+            if (!water) {
+                mob.updatePath(world);
+            }
         }
         mobs.removeIf(Mob::isDead);
     }

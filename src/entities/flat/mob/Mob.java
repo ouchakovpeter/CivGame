@@ -35,12 +35,6 @@ public class Mob extends FlatInstance{
         this.y = (this.y % world.getHeight() + world.getHeight()) % world.getHeight();
     }
 
-    // Returns the first tile ahead (legacy convenience)
-    public Tile detectTile(World world){
-        List<Tile> tiles = detectTiles(world);
-        return tiles.isEmpty() ? null : tiles.get(0);
-    }
-
     // New: returns all tiles along the look direction up to viewDistance (1 tile increments)
     public List<Tile> detectTiles(World world){
         List<Tile> tiles = new ArrayList<>();
@@ -59,6 +53,34 @@ public class Mob extends FlatInstance{
             }
         }
         return tiles;
+    }
+
+    //Update Path
+    public void updatePath(World world) {
+
+        int tileX = ((int) this.x);
+        int tileY = ((int) this.y);
+        //pixel pos
+        float xFrac = this.x - tileX;
+        float yFrac = this.y - tileY;
+        int pixelX = (int) (xFrac * 16.0f);
+        int pixelY = (int) (yFrac * 16.0f);
+        if (pixelX < 0) pixelX = 0; else if (pixelX > 15) pixelX = 15;
+        if (pixelY < 0) pixelY = 0; else if (pixelY > 15) pixelY = 15;
+
+
+        byte damage = world.getPathDamage(tileX,tileY,pixelX,pixelY);
+
+        int damageMax = 1;
+
+        //increment damage until specified
+        if (damage < damageMax) {
+            damage++;
+            world.setPathDamage(tileX,tileY,pixelX,pixelY,damage);
+        }
+        else {
+            //damage boolean
+        }
     }
 
     public boolean inWater(World world){

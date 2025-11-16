@@ -19,12 +19,12 @@ public class World {
     private int chunkCols, chunkRows;
     private List<FlatInstance>[][] flatChunks;
     private byte[] tiles;
+    private byte pathDamage[][][][];
+
     private final NoiseGenerator generator;
     private int width;
     private int height;
     private int depth;
-
-    private float treeVariableTest = 0;
 
     private Matrix4f worldTransform;
 
@@ -35,6 +35,8 @@ public class World {
         this.depth = generator.getDepth();
 
         tiles = new byte[width * height * depth];
+        pathDamage = new byte[width][height][16][16]; // width/height
+
         // Init chunk grid
         this.chunkCols = Math.max(1, (int)Math.ceil(width / (double)CHUNK_SIZE));
         this.chunkRows = Math.max(1, (int)Math.ceil(height / (double)CHUNK_SIZE));
@@ -419,6 +421,15 @@ public class World {
             return null;
         }
     }
+
+    public byte getPathDamage(int tileX, int tileY, int pixelX, int pixelY) {
+        return pathDamage[tileX][tileY][pixelX][pixelY];
+    }
+
+    public void setPathDamage(int tileX, int tileY, int pixelX, int pixelY, byte value) {
+        pathDamage[tileX][tileY][pixelX][pixelY] = value;
+    }
+
 
     public int getWidth() {
         return width;
