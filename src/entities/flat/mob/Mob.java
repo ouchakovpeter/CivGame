@@ -36,24 +36,30 @@ public class Mob extends FlatInstance{
     }
 
     // New: returns all tiles along the look direction up to viewDistance (1 tile increments)
-    public List<Tile> detectTiles(World world){
+    public List<Tile> detectTiles(World world) {
         List<Tile> tiles = new ArrayList<>();
-        int steps = (int) ceil(max(0f, viewDistance));
-        double rad = (PI / 180.0) * direction;
-        double cx = cos(rad);
-        double cy = sin(rad);
 
-        for (int i = 1; i <= steps; i++) {
-            int tx = Math.floorMod((int) Math.round(this.x + cx * i), world.getWidth());
-            int ty = Math.floorMod((int) Math.round(this.y + cy * i), world.getHeight());
-            int tz = world.getElevation(tx, ty);
-            Tile t = world.getTile(tx, ty, tz);
-            if (t != null) {
-                tiles.add(t);
-            }
-        }
+
         return tiles;
     }
+//    public List<Tile> detectTiles(World world){
+//        List<Tile> tiles = new ArrayList<>();
+//        int steps = (int) ceil(max(0f, viewDistance));
+//        double rad = (PI / 180.0) * direction;
+//        double cx = cos(rad);
+//        double cy = sin(rad);
+//
+//        for (int i = 1; i <= steps; i++) {
+//            int tx = Math.floorMod((int) Math.round(this.x + cx * i), world.getWidth());
+//            int ty = Math.floorMod((int) Math.round(this.y + cy * i), world.getHeight());
+//            int tz = world.getElevation(tx, ty);
+//            Tile t = world.getTile(tx, ty, tz);
+//            if (t != null) {
+//                tiles.add(t);
+//            }
+//        }
+//        return tiles;
+//    }
 
     //Update Path
     public void updatePath(World world) {
@@ -76,9 +82,8 @@ public class Mob extends FlatInstance{
 
             byte damage = world.getPathDamage(tileX, tileY, pixelX, pixelY);
 
-            int damageMax = 1;
+            int damageMax = 3;
 
-            //increment damage until specified
             if (damage < damageMax) {
                 damage++;
                 world.setPathDamage(tileX, tileY, pixelX, pixelY, damage);
