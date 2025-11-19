@@ -21,7 +21,7 @@ public class MobManager {
     }
     public void update(double deltaTime, World world) {
         for (Mob mob : mobs) {
-            mob.update(deltaTime);
+
             mob.adjustElevation(world);
             mob.wrap(world);
 

@@ -22,7 +22,8 @@ public class Mob extends FlatInstance{
         super(x, y, z, texture);
     }
 
-    public void update(double deltaTime) {}
+    public void update(double deltaTime) {
+    }
 
     public void adjustElevation(World world){
         if (!unlockZ) {
@@ -35,31 +36,40 @@ public class Mob extends FlatInstance{
         this.y = (this.y % world.getHeight() + world.getHeight()) % world.getHeight();
     }
 
-    // New: returns all tiles along the look direction up to viewDistance (1 tile increments)
+    //returns all tiles around player
     public List<Tile> detectTiles(World world) {
         List<Tile> tiles = new ArrayList<>();
 
+            for(int i = 0; i <= 2; i++)
+            {
+                for(int j = 0; j <= 2; j++)
+                {
+                    int tx = Math.floorMod((int)this.x + i, world.getWidth());
+                    int ty = Math.floorMod((int)this.y + j, world.getHeight());
 
+                    int tz = world.getElevation(tx, ty);
+                    Tile t = world.getTile(tx,ty,tz);
+                    if (t != null)
+                    {
+                        tiles.add(t);
+                    }
+                }
+            }
         return tiles;
     }
-//    public List<Tile> detectTiles(World world){
-//        List<Tile> tiles = new ArrayList<>();
-//        int steps = (int) ceil(max(0f, viewDistance));
-//        double rad = (PI / 180.0) * direction;
-//        double cx = cos(rad);
-//        double cy = sin(rad);
-//
-//        for (int i = 1; i <= steps; i++) {
-//            int tx = Math.floorMod((int) Math.round(this.x + cx * i), world.getWidth());
-//            int ty = Math.floorMod((int) Math.round(this.y + cy * i), world.getHeight());
-//            int tz = world.getElevation(tx, ty);
-//            Tile t = world.getTile(tx, ty, tz);
-//            if (t != null) {
-//                tiles.add(t);
-//            }
-//        }
-//        return tiles;
-//    }
+
+    public List<FlatInstance> detectResources(World world) {
+
+        int trees = 0;
+        int rocks = 0;
+
+        List<FlatInstance> resources = new ArrayList<>();
+
+
+        return resources;
+    }
+
+
 
     //Update Path
     public void updatePath(World world) {

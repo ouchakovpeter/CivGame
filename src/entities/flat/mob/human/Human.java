@@ -9,6 +9,8 @@ import java.util.Random;
 import static java.lang.Math.*;
 
 public class Human extends Mob {
+
+    public World world;
     public String name;
     public Personality personality;
     public float walkSpeed = 0.005f;
@@ -43,19 +45,7 @@ public class Human extends Mob {
 
         switch (state) {
             case WANDERING -> {
-                float x = ((float) cos((PI / 180) * (direction)) * speed);
-                float y = ((float) sin((PI / 180) * (direction)) * speed);
 
-                this.x += x;
-                this.y += y;
-
-                actionTimer += deltaTime;
-
-//                if(actionTimer >= 2f){
-//                    Random rand = new Random();
-//                    direction += rand.nextInt(-90,90);
-//                        actionTimer = 0f;
-//                }
             }
             case FORAGING -> {
 
